@@ -9,4 +9,5 @@ async def index(request):
     return html("<h1>Kyber was here</h1>")
 
 if __name__ == '__main__':
+    print(os.environ)
     app.run(port=os.getenv('$PORT'))
