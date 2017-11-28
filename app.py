@@ -10,4 +10,7 @@ async def index(request):
 
 if __name__ == '__main__':
     print(os.environ)
-    app.run(port=int(os.getenv('PORT', 8000)))
+    app.run(
+        port=int(os.getenv('PORT', 8000))
+        workers=int(os.getenv('WEB_CONCURRENCY', 1))
+        )
