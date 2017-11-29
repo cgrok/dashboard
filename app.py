@@ -41,9 +41,10 @@ app.static('/templates', './templates')
 botname = 'Statsy' # TODO: Do db shit and login
 
 def log(text):
-    return app.add_task(
+    app.add_task(
         app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
         )
+    print(text)
 
 def login_required():
     def decorator(f):
@@ -117,7 +118,7 @@ def format_embed(event):
         em.description = os.popen(cmd).read().strip()
     return {'embeds': [em.to_dict()]}
 
-@app.route('/hooks/github', methods=['POST'])
+@app.post('/hooks/github')
 async def upgrade(request):
     log(dir(request))
     try:
