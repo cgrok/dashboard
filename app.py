@@ -147,6 +147,7 @@ def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
         return bytes(s)
     else:
         return s.encode(encoding, errors)
+    
 
 def validate_payload(request):
     if not request.headers.get('X-Hub-Signature'):
