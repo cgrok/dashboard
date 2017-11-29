@@ -100,7 +100,7 @@ def format_embed(event):
     if event == 'update':
         em.title = event.title()
     elif event == 'deploy':
-        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s"'
+        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s (%cr)"'
 
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
