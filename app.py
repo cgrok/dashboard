@@ -2,6 +2,9 @@ from sanic import Sanic
 from sanic.response import html
 from jinja2 import Environment, PackageLoader
 import os
+from jinja2 import Environment, PackageLoader
+
+env = Environment(loader=PackageLoader('app', 'templates'))
 
 app = Sanic(__name__)
 env = Environment(loader=PackageLoader('app', 'templates'))
