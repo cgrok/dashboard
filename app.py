@@ -169,7 +169,6 @@ async def upgrade(request):
         return unauthorized()
     # app.add_task(restart_later())
     return text('ok', status=200)
-    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
