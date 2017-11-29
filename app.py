@@ -79,6 +79,7 @@ async def index(request):
             botname=botname
             ))
 
+            
 @app.route('/bot')
 async def bot(request):
     template = env.get_template('bot_profile.html')
