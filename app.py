@@ -55,7 +55,7 @@ def login_required():
 
 @app.listener('before_server_start')
 async def init(app, loop):
-    app.loop = loop
+    print(dir(app))
     app.session = aiohttp.ClientSession(loop=loop)
     with open('data/config.json') as f:
         data = json.load(f)
