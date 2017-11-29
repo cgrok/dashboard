@@ -64,6 +64,7 @@ async def init(app, loop):
         app.password = data.get('password')
         app.webhook_url = data.get('webhook_url')
         app.log_url = data.get('log_url')
+        print(data)
 
     await app.session.post(
         app.webhook_url, 
@@ -79,7 +80,7 @@ async def index(request):
             botname=botname
             ))
 
-            
+
 @app.route('/bot')
 async def bot(request):
     template = env.get_template('bot_profile.html')
