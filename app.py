@@ -106,7 +106,7 @@ def format_embed(event):
             cmd = cmd.format(r'`%h`')
         else:
             cmd = cmd.format(r'%h')
-
+    
         revision = os.popen(cmd).read().strip()
         em.title = event.title()
         em.description = revision
