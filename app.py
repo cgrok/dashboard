@@ -106,7 +106,7 @@ def format_embed(event):
             cmd = cmd.format(r'`%h`')
         else:
             cmd = cmd.format(r'%h')
-    
+
         revision = os.popen(cmd).read().strip()
         em.title = event.title()
         em.description = revision
@@ -123,4 +123,3 @@ async def upgrade(request):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
-
