@@ -32,6 +32,8 @@ import os
 import discord
 import asyncio
 import ujson
+import hmac
+import hashlib
 
 
 app = Sanic(__name__)
@@ -133,17 +135,36 @@ async def restart_later():
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
 
+
+def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
+    # Handle the common case first for performance reasons.
+    if isinstance(s, bytes):
+        if encoding == 'utf-8':
+            return s
+        else:
+            return s.decode('utf-8', errors).encode(encoding, errors)
+    if isinstance(s, memoryview):
+        return bytes(s)
+    else:
+        return s.encode(encoding, errors)
+
+def validate_payload(request):
+    sha_name, signature = request.headers['X-Hub-Signature']
+    digester = hmac.new(
+        fbytes(app.password), 
+        fbytes(request.body),
+        hashlib.sha1
+        )
+    generated = fbytes(digester.hexdigest())
+    return hmac.compare_digest(generated, signature)
+
+def unauthorized():
+    return text('Unauthorized', status=401)
+
 @app.post('/hooks/github')
 async def upgrade(request):
-    log(dir(request))
-    try:
-        log(request.headers)
-    except:
-        pass
-    await app.session.post(
-        app.webhook_url, 
-        json=format_embed('update')
-        )
+    if not validate_payload(request):
+        return unauthorized()
     # app.add_task(restart_later())
     return text('ok', status=200)
     
