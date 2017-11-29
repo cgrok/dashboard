@@ -41,7 +41,7 @@ app.static('/templates', './templates')
 botname = 'Statsy' # TODO: Do db shit and login
 
 def log(text):
-    return app.loop.create_task(
+    return app.add_task(
         app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
         )
 
@@ -55,7 +55,6 @@ def login_required():
 
 @app.listener('before_server_start')
 async def init(app, loop):
-    print(dir(app))
     app.session = aiohttp.ClientSession(loop=loop)
     with open('data/config.json') as f:
         data = json.load(f)
