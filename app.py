@@ -96,7 +96,7 @@ def format_embed(event):
     em.title = event.title() + ': Restarting!'
     return {'embeds': [em.to_dict()]}
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/hooks/github', methods=['POST'])
 async def upgrade(request):
     await self.session.post(
         app.webhook_url, 
