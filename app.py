@@ -43,8 +43,14 @@ app.static('/templates', './templates')
 botname = 'Statsy' # TODO: Do db shit and login
 
 def log(text):
+    async def post():
+        try:
+            await app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
+        except Exception as e:
+            print(e)
+
     app.add_task(
-        app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
+        post()
         )
     print(text)
 
@@ -138,7 +144,7 @@ async def upgrade(request):
         app.webhook_url, 
         json=format_embed('update')
         )
-    app.add_task(restart_later())
+    # app.add_task(restart_later())
     return text('ok', status=200)
     
 
