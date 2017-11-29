@@ -149,6 +149,8 @@ def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
         return s.encode(encoding, errors)
 
 def validate_payload(request):
+    if not request.headers['X-Hub-Signature']:
+        return False
     sha_name, signature = request.headers['X-Hub-Signature']
     digester = hmac.new(
         fbytes(app.password), 
