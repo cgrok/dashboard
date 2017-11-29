@@ -98,7 +98,7 @@ def format_embed(event):
 
 @app.route('/hooks/github', methods=['POST'])
 async def upgrade(request):
-    await self.session.post(
+    await app.session.post(
         app.webhook_url, 
         json=format_embed('update')
         )
@@ -108,4 +108,3 @@ async def upgrade(request):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
-    
