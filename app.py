@@ -147,7 +147,7 @@ def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
         return bytes(s)
     else:
         return s.encode(encoding, errors)
-    
+
 
 def validate_payload(request):
     if not request.headers.get('X-Hub-Signature'):
@@ -159,7 +159,7 @@ def validate_payload(request):
         hashlib.sha1
         )
     generated = fbytes(digester.hexdigest())
-    return hmac.compare_digest(generated, signature)
+    return hmac.compare_digest(generated, fbytes(signature))
 
 def unauthorized():
     return text('Unauthorized', status=401)
