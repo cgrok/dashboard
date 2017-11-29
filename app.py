@@ -100,16 +100,15 @@ def format_embed(event):
     if event == 'update':
         em.title = event.title()
     elif event == 'deploy':
-        cmd = r'git show -s HEAD~1..HEAD --format="[`%h`](https://github.com/cgrok/dash/commit/%H) %s"'
-        
+        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s"'
+
         if os.name == 'posix':
             cmd = cmd.format(r'`%h`')
         else:
             cmd = cmd.format(r'%h')
 
-        revision = os.popen(cmd).read().strip()
         em.title = event.title()
-        em.description = revision
+        em.description = os.popen(cmd).read().strip()
     return {'embeds': [em.to_dict()]}
 
 @app.route('/hooks/github', methods=['POST'])
