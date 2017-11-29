@@ -105,6 +105,6 @@ async def upgrade(request):
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+    
