@@ -114,6 +114,11 @@ def format_embed(event):
 
 @app.route('/hooks/github', methods=['POST'])
 async def upgrade(request):
+    print(dir(request))
+    try:
+        print(request.headers)
+    except:
+        pass
     await app.session.post(
         app.webhook_url, 
         json=format_embed('update')
