@@ -103,9 +103,9 @@ def format_embed(event):
         cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s"'
 
         if os.name == 'posix':
-            cmd = cmd.format(r'`%h`')
+            cmd = cmd.format(r'\`%h\`')
         else:
-            cmd = cmd.format(r'%h')
+            cmd = cmd.format(r'`%h`')
 
         em.title = event.title()
         em.description = os.popen(cmd).read().strip()
