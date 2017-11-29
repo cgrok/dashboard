@@ -4,6 +4,7 @@ from jinja2 import Environment, PackageLoader
 import aiohttp
 import os
 import discord
+import json
 
 env = Environment(loader=PackageLoader('app', 'templates'))
 
