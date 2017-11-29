@@ -31,6 +31,8 @@ import aiohttp
 import os
 import discord
 import asyncio
+import ujson
+
 
 app = Sanic(__name__)
 env = Environment(loader=PackageLoader('app', 'templates'))
@@ -58,7 +60,7 @@ def login_required():
 async def init(app, loop):
     app.session = aiohttp.ClientSession(loop=loop)
     with open('data/config.json') as f:
-        data = json.load(f)
+        data = ujson.loads(f.read())
         app.password = data.get('password')
         app.webhook_url = data.get('webhook_url')
         app.log_url = data.get('log_url')
