@@ -95,8 +95,21 @@ async def cmds(request):
             ))
 
 def format_embed(event):
+    event = event.lower()
     em = discord.Embed(color=discord.Color.green())
-    em.title = event.title()
+    if event == 'update':
+        em.title = event.title()
+    elif event == 'deploy':
+        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s (%cr)"'
+
+        if os.name == 'posix':
+            cmd = cmd.format(r'`%h`')
+        else:
+            cmd = cmd.format(r'%h')
+
+        revision = os.popen(cmd).read().strip()
+        em.title = event.title()
+        em.description = revision
     return {'embeds': [em.to_dict()]}
 
 @app.route('/hooks/github', methods=['POST'])
