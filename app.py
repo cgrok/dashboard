@@ -32,8 +32,6 @@ import os
 import discord
 import json
 
-env = Environment(loader=PackageLoader('app', 'templates'))
-
 app = Sanic(__name__)
 env = Environment(loader=PackageLoader('app', 'templates'))
 
@@ -44,7 +42,7 @@ botname = 'Statsy'
 
 def login_required():
     def decorator(f):
-        def wrapper(*args, **kwargs):
+        def wrapper(request, **kwargs):
             #do shit
             pass
         return wrapper
@@ -56,7 +54,12 @@ async def init(app, loop):
     with open('data/config.json') as f:
         data = json.load(f)
         app.password = data.get('password')
-        app.webhook_url = data.get('webhook_url') 
+        app.webhook_url = data.get('webhook_url')
+
+    await app.session.post(
+        app.webhook_url, 
+        json=format_embed('deploy')
+        )
 
 @app.route('/')
 async def index(request):
@@ -93,7 +96,7 @@ async def cmds(request):
 
 def format_embed(event):
     em = discord.Embed(color=discord.Color.green())
-    em.title = event.title() + ': Restarting!'
+    em.title = event.title()
     return {'embeds': [em.to_dict()]}
 
 @app.route('/hooks/github', methods=['POST'])
@@ -107,4 +110,4 @@ async def upgrade(request):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
-    
+
