@@ -25,12 +25,12 @@ SOFTWARE.
 
 
 from sanic import Sanic
-from sanic.response import html
+from sanic.response import html, text, json
 from jinja2 import Environment, PackageLoader
 import aiohttp
 import os
 import discord
-import json
+import asyncio
 
 app = Sanic(__name__)
 env = Environment(loader=PackageLoader('app', 'templates'))
@@ -118,6 +118,11 @@ def format_embed(event):
         em.description = os.popen(cmd).read().strip()
     return {'embeds': [em.to_dict()]}
 
+async def restart_later():
+    await asyncio.sleep(5)
+    command = 'sh ../dash.sh'
+    p = os.system(f'echo {app.password}|sudo -S {command}')
+
 @app.post('/hooks/github')
 async def upgrade(request):
     log(dir(request))
@@ -129,8 +134,9 @@ async def upgrade(request):
         app.webhook_url, 
         json=format_embed('update')
         )
-    command = 'sh ../dash.sh'
-    p = os.system(f'echo {app.password}|sudo -S {command}')
+    app.add_task(restart_later())
+    return text('ok', status=200)
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
