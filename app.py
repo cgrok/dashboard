@@ -38,7 +38,12 @@ env = Environment(loader=PackageLoader('app', 'templates'))
 app.static('/assets', './templates/assets')
 app.static('/templates', './templates')
 
-botname = 'Statsy'
+botname = 'Statsy' # TODO: Do db shit and login
+
+def log(text):
+    return app.loop.create_task(
+        app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
+        )
 
 def login_required():
     def decorator(f):
@@ -50,11 +55,13 @@ def login_required():
 
 @app.listener('before_server_start')
 async def init(app, loop):
+    app.loop = loop
     app.session = aiohttp.ClientSession(loop=loop)
     with open('data/config.json') as f:
         data = json.load(f)
         app.password = data.get('password')
         app.webhook_url = data.get('webhook_url')
+        app.log_url = data.get('log_url')
 
     await app.session.post(
         app.webhook_url, 
@@ -113,9 +120,9 @@ def format_embed(event):
 
 @app.route('/hooks/github', methods=['POST'])
 async def upgrade(request):
-    print(dir(request))
+    log(dir(request))
     try:
-        print(request.headers)
+        log(request.headers)
     except:
         pass
     await app.session.post(
