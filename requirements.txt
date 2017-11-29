@@ -1,3 +1,4 @@
 sanic
 aiohttp
 gunicorn
+jinja2

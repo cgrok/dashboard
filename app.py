@@ -1,12 +1,17 @@
 from sanic import Sanic
 from sanic.response import html
 import os
+from jinja2 import Environment, PackageLoader
+
+env = Environment(loader=PackageLoader('app', 'templates'))
 
 app = Sanic(__name__)
 
 @app.route('/')
 async def index(request):
-    return html("<h1>Kyber was here</h1>")
+    template = env.get_template('home.html')
+    html_content = template.render()
+    return html(html_content)
 
 if __name__ == '__main__':
     app.run(
