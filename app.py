@@ -22,11 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
-
-
 from sanic import Sanic
 from sanic.response import html, text, json
-from jinja2 import Environment, PackageLoader
 import aiohttp
 import os
 import discord
@@ -35,26 +32,10 @@ import ujson
 import hmac
 import hashlib
 
-
 app = Sanic(__name__)
-env = Environment(loader=PackageLoader('app', 'templates'))
 
 app.static('/assets', './templates/assets')
 app.static('/templates', './templates')
-
-botname = 'Statsy' # TODO: Do db shit and login
-
-def log(text):
-    async def post():
-        try:
-            await app.session.post(app.log_url, json={'content': f'`{str(text)}`'})
-        except Exception as e:
-            print(e)
-
-    app.add_task(
-        post()
-        )
-    print(text)
 
 def login_required():
     def decorator(f):
@@ -81,37 +62,11 @@ async def init(app, loop):
 
 @app.route('/')
 async def index(request):
-    print(request.path)
-    template = env.get_template('dashboard.html')
-    return html(template.render(
-            index='active',
-            botname=botname
-            ))
+    return text('Hello World')
 
-
-@app.route('/bot')
-async def bot(request):
-    template = env.get_template('bot_profile.html')
-    return html(template.render(
-            bot='active',
-            botname=botname
-            ))
-
-@app.route('/config')
-async def config(request):
-    template = env.get_template('configuration.html')
-    return html(template.render(
-            config='active',
-            botname=botname
-            ))
-
-@app.route('/commands')
-async def cmds(request):
-    template = env.get_template('commands.html')
-    return html(template.render(
-            commands='active',
-            botname=botname
-            ))
+@app.route('/api')
+async def index(request):
+    return json('Hello World')
 
 def format_embed(event):
     event = event.lower()
@@ -120,12 +75,10 @@ def format_embed(event):
         em.title = event.title()
     elif event == 'deploy':
         cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s (%cr)"'
-
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
         else:
             cmd = cmd.format(r'`%h`')
-
         em.title = event.title()
         em.description = os.popen(cmd).read().strip()
     return {'embeds': [em.to_dict()]}
@@ -134,7 +87,6 @@ async def restart_later():
     await asyncio.sleep(5)
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
-
 
 def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
     # Handle the common case first for performance reasons.
