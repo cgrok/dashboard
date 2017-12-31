@@ -76,9 +76,9 @@ async def bots(request, owner):
     "autorole": 61394813841,
     "custom_commands": {},
     "welcome_message": "hi there",
-    "leave_message": 31315135135135
+    "leave_message": 31315135135135,
     "welcome_channel": 12512515125125,
-    "leave_channel": 133153151513
+    "leave_channel": 133153151513,
     })
     
 
