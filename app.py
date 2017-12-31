@@ -64,9 +64,23 @@ async def init(app, loop):
 async def index(request):
     return text('Hello World')
 
-@app.route('/api')
-async def index(request):
-    return json('Hello World')
+@app.route('/api/v1')
+async def version(request):
+    return json({'version': "1.0.0"})
+
+@app.route('/api/v1/bots/<owner:int>')
+async def bots(request, owner):
+    return json({
+    "bot_id": 123445673643,
+    "prefixes": ['!', '?'],
+    "autorole": 61394813841,
+    "custom_commands": {},
+    "welcome_message": "hi there",
+    "leave_message": 31315135135135
+    "welcome_channel": 12512515125125,
+    "leave_channel": 133153151513
+    })
+    
 
 def format_embed(event):
     event = event.lower()
@@ -124,3 +138,4 @@ async def upgrade(request):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+
