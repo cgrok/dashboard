@@ -48,7 +48,7 @@ def authrequired():
                 return error('Missing authentication key.')
             if not token.startswith('Bearer'):
                 return error('Invalid authentication key provided.')
-            exists = await app.db.admin.find_one({'token': token.replace('Bearer', '')})
+            exists = await app.db.admin.find_one({'token': token.replace('Bearer ', '')})
             if exists is not None:
                 return await f(request, *args, **kwargs)
             else:
