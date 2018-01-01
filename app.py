@@ -45,12 +45,14 @@ def authrequired():
         async def wrapper(request, *args, **kwargs):
             token = request.headers.get('Authorization')
             if not token:
-                return unauthorized('Missing authentication key.')
-            exists = await app.db.admin.find_one({'token': token})
+                return error('Missing authentication key.')
+            if not token.startswith('Bearer'):
+                return error('Invalid authentication key provided.')
+            exists = await app.db.admin.find_one({'token': token.replace('Bearer', '')})
             if exists is not None:
                 return await f(request, *args, **kwargs)
             else:
-                return unauthorized('Invalid authentication key provided.')
+                return error('Invalid authentication key provided.')
         return wrapper
     return decorator
 
@@ -84,6 +86,8 @@ async def version(request):
 @authrequired()
 async def get_bot_info(request, owner_id):
     data = await app.db.bot_info.find_one({"owner_id": owner_id})
+    if not data:
+        return error('Invalid owner ID', 404)
     data.pop('_id')
     return json(data)
 
@@ -142,16 +146,16 @@ def validate_payload(request):
     generated = fbytes(digester.hexdigest())
     return hmac.compare_digest(generated, fbytes(signature))
 
-def unauthorized(reason):
+def error(reason, status=401):
     return json({
         "error": True,
         "message": reason
-        }, status=401)
+        }, status=status)
 
 @app.post('/hooks/github')
 async def upgrade(request):
     if not validate_payload(request):
-        return unauthorized()
+        return error()
     # app.add_task(restart_later())
     return text('ok', status=200)
 
