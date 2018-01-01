@@ -78,28 +78,27 @@ async def init(app, loop):
  
 @app.route('/')
 async def index(request):
-    return text('Hello World')
+    return text('This is meant to be a bot dashboard website')
 
 @app.route('/api/v1')
 async def version(request):
-    return json({'version': "1.0.0"})
+    return json({'version': "1.0.1"})
 
-
-@app.get('/api/v1/bots/<owner_id:int>')
-@authrequired()
-async def get_bot_info(request, owner_id):
-    data = await app.db.bot_info.find_one({"owner_id": owner_id})
+@app.get('/api/v1/bots/<bot_id:int>')
+async def get_bot_info(request, bot_id):
+    data = await app.db.bot_info.find_one({"bot_id": bot_id})
     if not data:
-        return error('Invalid owner ID', 404)
+        return error('Invalid bot ID', 404)
     data.pop('_id')
+    data.pop('bot_token')
     return json(data)
 
-@app.post('/api/v1/bots/<owner_id:int>')
+@app.post('/api/v1/bots/<bot_id:int>')
 @authrequired()
-async def set_bot_info(request, owner_id):
+async def set_bot_info(request, bot_id):
     data = request.json
     await app.db.bot_info.update_one(
-        {"owner_id": owner_id},
+        {"bot_id": bot_id},
         {"$set": data}, upsert=True
     )
     return json({'success': True})
@@ -121,6 +120,7 @@ def format_embed(event):
 
 async def restart_later():
     await asyncio.sleep(5)
+    app.session.close()
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
 
@@ -162,5 +162,8 @@ async def upgrade(request):
     return json({'success': True})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    if os.getenv('VSCODE_PID'): # not on vps
+        app.run(host='localhost', port=8000)
+    else: 
+        app.run(host='0.0.0.0', port=80)
 
