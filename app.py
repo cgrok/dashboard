@@ -91,7 +91,6 @@ async def get_bot_info(request, owner_id):
     data.pop('_id')
     return json(data)
 
-
 @app.post('/api/v1/bots/<owner_id:int>')
 @authrequired()
 async def set_bot_info(request, owner_id):
