@@ -33,7 +33,7 @@ import ujson
 import hmac
 import hashlib
 
-app = Sanic(__name__)
+app = Sanic('dash')
 
 def json(data, *args, **kwargs):
     return text(
@@ -90,7 +90,6 @@ async def get_bot_info(request, owner_id):
         return error('Invalid owner ID', 404)
     data.pop('_id')
     return json(data)
-
 
 @app.post('/api/v1/bots/<owner_id:int>')
 @authrequired()
