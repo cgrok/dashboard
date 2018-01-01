@@ -23,7 +23,8 @@ SOFTWARE.
 '''
 
 from sanic import Sanic
-from sanic.response import html, text, json
+from sanic.response import html, text
+from motor.motor_asyncio import AsyncIOMotorClient
 import aiohttp
 import os
 import discord
@@ -34,14 +35,22 @@ import hashlib
 
 app = Sanic(__name__)
 
-app.static('/assets', './templates/assets')
-app.static('/templates', './templates')
+def json(data, *args, **kwargs):
+    return text(
+        ujson.dumps(data, indent=4), *args, **kwargs
+        )
 
-def login_required():
+def authrequired():
     def decorator(f):
-        def wrapper(request, **kwargs):
-            #do shit
-            pass
+        async def wrapper(request, *args, **kwargs):
+            token = request.headers.get('Authorization')
+            if not token:
+                return unauthorized('Missing authentication key.')
+            exists = await app.db.admin.find_one({'token': token})
+            if exists is not None:
+                return await f(request, *args, **kwargs)
+            else:
+                return unauthorized('Invalid authentication key provided.')
         return wrapper
     return decorator
 
@@ -53,13 +62,15 @@ async def init(app, loop):
         app.password = data.get('password')
         app.webhook_url = data.get('webhook_url')
         app.log_url = data.get('log_url')
-        print(data)
-
-    await app.session.post(
-        app.webhook_url, 
-        json=format_embed('deploy')
-        )
-
+        mongo_client = AsyncIOMotorClient(data.get('mongo_url'))
+        app.db = mongo_client.dash
+    
+    if app.webhook_url:
+        await app.session.post(
+            app.webhook_url, 
+            json=format_embed('deploy')
+            )
+ 
 @app.route('/')
 async def index(request):
     return text('Hello World')
@@ -68,19 +79,24 @@ async def index(request):
 async def version(request):
     return json({'version': "1.0.0"})
 
-@app.route('/api/v1/bots/<owner:int>')
-async def bots(request, owner):
-    return json({
-    "bot_id": 123445673643,
-    "prefixes": ['!', '?'],
-    "autorole": 61394813841,
-    "custom_commands": {},
-    "welcome_message": "hi there",
-    "leave_message": 31315135135135,
-    "welcome_channel": 12512515125125,
-    "leave_channel": 133153151513,
-    })
-    
+
+@app.get('/api/v1/bots/<owner_id:int>')
+@authrequired()
+async def get_bot_info(request, owner_id):
+    data = await app.db.bot_info.find_one({"owner_id": owner_id})
+    data.pop('_id')
+    return json(data)
+
+
+@app.post('/api/v1/bots/<owner_id:int>')
+@authrequired()
+async def set_bot_info(request, owner_id):
+    data = request.json
+    await app.db.bot_info.update_one(
+        {"owner_id": owner_id},
+        {"$set": data}, upsert=True
+    )
+    return json({'success': True})
 
 def format_embed(event):
     event = event.lower()
@@ -126,8 +142,11 @@ def validate_payload(request):
     generated = fbytes(digester.hexdigest())
     return hmac.compare_digest(generated, fbytes(signature))
 
-def unauthorized():
-    return text('Unauthorized', status=401)
+def unauthorized(reason):
+    return json({
+        "error": True,
+        "message": reason
+        }, status=401)
 
 @app.post('/hooks/github')
 async def upgrade(request):
