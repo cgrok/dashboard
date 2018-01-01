@@ -156,7 +156,7 @@ def error(reason, status=401):
 async def upgrade(request):
     if not validate_payload(request):
         return error()
-    # app.add_task(restart_later())
+    app.add_task(restart_later())
     return text('ok', status=200)
 
 if __name__ == '__main__':
