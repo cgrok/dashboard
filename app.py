@@ -23,7 +23,7 @@ SOFTWARE.
 '''
 
 from sanic import Sanic
-from sanic.response import html, text
+from sanic.response import text, HTTPResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 import aiohttp
 import os
@@ -35,9 +35,12 @@ import hashlib
 
 app = Sanic('dash')
 
-def json(data, *args, **kwargs):
-    return text(
-        ujson.dumps(data, indent=4), *args, **kwargs
+def json(data, status=200, headers=None):
+    return HTTPResponse(
+        ujson.dumps(data, indent=4), 
+        status=status,
+        headers=headers,
+        content_type='application/json'
         )
 
 def authrequired():
@@ -156,7 +159,7 @@ async def upgrade(request):
     if not validate_payload(request):
         return error()
     app.loop.create_task(restart_later())
-    return text('ok', status=200)
+    return json({'success': True})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
