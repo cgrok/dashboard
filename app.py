@@ -23,7 +23,7 @@ SOFTWARE.
 '''
 
 from sanic import Sanic
-from sanic.response import text, HTTPResponse
+from sanic.response import html, text, HTTPResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 import aiohttp
 import os
@@ -78,22 +78,20 @@ async def init(app, loop):
  
 @app.route('/')
 async def index(request):
-    return text('This is meant to be a bot dashboard website')
+    with open('build/html')
+    return html('This is meant to be a bot dashboard website')
 
-@app.route('/api/v1')
-async def version(request):
-    return json({'version': "1.0.1"})
-
-@app.get('/api/v1/bots/<bot_id:int>')
+@app.get('/api/bots/<bot_id:int>')
 async def get_bot_info(request, bot_id):
     data = await app.db.bot_info.find_one({"bot_id": bot_id})
     if not data:
         return error('Invalid bot ID', 404)
     data.pop('_id')
     data.pop('bot_token')
+    data.pop('bot_id')
     return json(data)
 
-@app.post('/api/v1/bots/<bot_id:int>')
+@app.post('/api/bots/<bot_id:int>')
 @authrequired()
 async def set_bot_info(request, bot_id):
     data = request.json
@@ -162,7 +160,7 @@ async def upgrade(request):
     return json({'success': True})
 
 if __name__ == '__main__':
-    if os.getenv('VSCODE_PID'): # not on vps
+    if os.getenv('VSCODE_PID'): # not on vps 
         app.run(host='localhost', port=8000)
     else: 
         app.run(host='0.0.0.0', port=80)
