@@ -91,6 +91,7 @@ async def get_bot_info(request, owner_id):
     data.pop('_id')
     return json(data)
 
+
 @app.post('/api/v1/bots/<owner_id:int>')
 @authrequired()
 async def set_bot_info(request, owner_id):
@@ -155,7 +156,7 @@ def error(reason, status=401):
 async def upgrade(request):
     if not validate_payload(request):
         return error()
-    app.add_task(restart_later())
+    app.loop.create_task(restart_later())
     return text('ok', status=200)
 
 if __name__ == '__main__':
