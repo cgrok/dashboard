@@ -42,7 +42,7 @@ with open('data/config.json') as f:
 
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
-OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/callback'
+OAUTH2_REDIRECT_URI = 'http://botsettings.tk/callback'
 
 API_BASE_URL = 'https://discordapp.com/api'
 AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
@@ -236,7 +236,7 @@ def error(reason, status=401):
         }, status=status)
 
 if __name__ == '__main__':
-    if os.getenv('VSCODE_PID'): # not on vps 
+    if os.getenv('VSCODE_PID'): # development
         app.run()
     else: 
         app.run(host='0.0.0.0', port=80)
