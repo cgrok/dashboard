@@ -51,6 +51,8 @@ TOKEN_URL = API_BASE_URL + '/oauth2/token'
 app = Sanic('dash')
 session_interface = InMemorySessionInterface()
 
+app.static('/css', './css')
+
 @app.middleware('request')
 async def add_session_to_request(request):
     await session_interface.open(request)
