@@ -1,0 +1,25 @@
+body
+{
+	background-color: #D0B9AD;
+	overflow: hidden;
+}
+.jumbotron
+{
+	font-size:70px;
+	background-color: #75B4C9;
+	border-radius:20px;
+	font-family: 'Arbutus Slab';
+	margin-top:35%;
+}
+.center-block
+{
+	width:40%;
+}
+.btn.btn-default
+{
+	padding: 5% 0;
+	background-color: #836C60;
+	font-family: 'Arbutus Slab';
+	color: white;
+	font-weight:bold;
+}
