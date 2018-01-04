@@ -108,7 +108,7 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    return text('This is meant to be an index.html')
+    return text('html/index.html')
 
 @app.get('/api/bots/<bot_id:int>')
 @authrequired()
