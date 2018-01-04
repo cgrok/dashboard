@@ -1,25 +1,48 @@
 body
 {
-	background-color: #D0B9AD;
-	overflow: hidden;
+	background-color: #c2c6ce;
 }
-.jumbotron
+.nav-wrapper
 {
-	font-size:70px;
-	background-color: #75B4C9;
-	border-radius:20px;
-	font-family: 'Arbutus Slab';
-	margin-top:35%;
+	padding-left:1%;
 }
-.center-block
+.col.s12
 {
-	width:40%;
+	padding-left:0%;
+	padding-right:0%;
 }
-.btn.btn-default
+a, span
 {
-	padding: 5% 0;
-	background-color: #836C60;
-	font-family: 'Arbutus Slab';
-	color: white;
+	font-family: "Duru Sans";
+}
+#dashtitle
+{
+	font-size: 1.5vmax;
 	font-weight:bold;
+}
+#rst
+{
+	font-size: 1.3vmax;
+}
+.card.grey.lighten-3
+{
+	position:relative;
+	padding-left:5em;
+	padding-right:5em;
+	padding-bottom: 3em;
+	padding-top:3em;
+	border-radius: 20px;
+}
+.card.deep-orange.lighten-2
+{
+	position: absolute;
+	top:23%;
+	left:35%;
+	width: 10%; 
+	z-index:1;
+	border-radius:10px;
+}
+.container.txt
+{
+	margin-top:10%;
 }
