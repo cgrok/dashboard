@@ -1,6 +1,6 @@
 body
 {
-	background-color: #c2c6ce;
+	background-color: #e4e4e4;
 }
 .nav-wrapper
 {
@@ -15,32 +15,25 @@ a, span
 {
 	font-family: "Duru Sans";
 }
-#dashtitle
-{
-	font-size: 1.5vmax;
-	font-weight:bold;
-}
+
 #rst
 {
-	font-size: 1.3vmax;
+	font-size: 12;
 }
 .card.grey.lighten-3
 {
 	position:relative;
-	padding-left:5em;
-	padding-right:5em;
-	padding-bottom: 3em;
-	padding-top:3em;
-	border-radius: 20px;
+	padding-left:2em;
+	padding-right:2em;
+	padding-bottom: 2em;
+	padding-top:2em;
 }
 .card.deep-orange.lighten-2
 {
-	position: absolute;
-	top:23%;
-	left:35%;
-	width: 10%; 
+	color: white;
+	position: relative;
+	width: 100%; 
 	z-index:1;
-	border-radius:10px;
 }
 .container.txt
 {

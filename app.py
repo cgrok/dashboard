@@ -111,7 +111,7 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    with open('html/index.html') as h:
+    with open('html/index.html', encoding='utf-8') as h:
         return html(h.read())
 
 @app.get('/api/bots/<bot_id:int>')
