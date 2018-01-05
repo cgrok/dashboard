@@ -15,7 +15,10 @@ a, span
 {
 	font-family: "Duru Sans";
 }
-
+.dashU
+{
+	font-size: 2vmax;
+}
 #rst
 {
 	font-size: 12;
@@ -39,3 +42,4 @@ a, span
 {
 	margin-top:10%;
 }
+
