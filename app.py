@@ -52,6 +52,7 @@ app = Sanic('dash')
 session_interface = InMemorySessionInterface()
 
 app.static('/css', './css')
+app.static('/js', './js')
 
 @app.middleware('request')
 async def add_session_to_request(request):
