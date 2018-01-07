@@ -1,0 +1,33 @@
+.card-footer.text-center
+{
+	position:fixed;
+	bottom:0;
+	left:0;
+	right:0;
+	color:#2a2b2d;
+	background-color:#9fa3a8;
+	font-weight:bold;
+}
+span,p,h1,a
+{
+	font-family:"Duru Sans";
+}
+.container
+{
+	width:100%;
+	height:100px;
+}
+.wrp
+{
+	position:absolute;
+	padding:5%;
+	background-color:#1c1e24;
+	border-radius:10%;
+	width:45%;
+	left:28%;
+	top:120%;
+}
+.pbig
+{
+	font-size:145%;
+}

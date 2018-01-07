@@ -1,54 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Dash</title>
 		<meta charset="utf-8">
-		<link rel="stylesheet" type="text/css" href="static/css/materialize.min.css">
-		<link rel="stylesheet" type="text/css" href="static/css/custom.css">
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<meta name="author" content="cgrok">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="static/css/toolkit-inverse.min.css">
+		<link rel="stylesheet" type="text/css" href="static/css/cssFiles/custom.css">
 		<link href='https://fonts.googleapis.com/css?family=Duru Sans' rel='stylesheet'>
 	</head>
 	<body>
-		<div class="row">
-			<div class="col s12">
-				<nav>
-					<div class="nav-wrapper teal lighten-2">
-						<a class="brand-logo" href="#"><span class="dashU">Dash</span></a>
-						<ul id="nav-mobile" class="right">
-							<li><a href="login">Login</a></li>
-						</ul>
-					</div>
-				</nav>
+		<nav class="navbar-expand-sm bg-dark navbar-dark navbar">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">Dash</a>
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link" href="login/">Login</a>
+					</li>
+				</ul>
 			</div>
-		</div>
-		<div class="container txt">
-			<div class="row">
-				<div class="col s6 offset-s3">
-					<div class="card deep-orange lighten-2 center-align z-depth-1">
-						<div class="card-content">
-							<span id="dashtitle">Dash</span>
-						</div>
-					</div>			
-					<div class="card grey lighten-3 z-depth-1">
-						<div class="card-content">
-							<span id="rst">Manage your custom bots with ease in one place.</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<footer class="page-footer grey darken-1" style="position:fixed;bottom:0;left:0;width:100%;">
-			<div class="container">
+		</nav>
+		<div class="container">
+			<div class="wrp">
 				<div class="row">
-					<div class="col s12 center-align">
-						<span>© Copyright cgrok 2018</span>
+					<div class="col-sm-6 offset-sm-3 text-center">
+						<h1>Dash</h1>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-6 offset-sm-3 text-center">
+						<p class="pbig">Edit all your bots, in one place, with ease</p>
 					</div>
 				</div>
 			</div>
+		</div>
+		<footer class="card-footer text-center">
+			<span>© Copyright cgrok 2018</span>
 		</footer>
-		<script src="static/js/jquery-3.2.1.min.js"></script>
-		<script src="static/js/materialize.min.js"></script>
+		<script src="static/js/jquery.min.css"></script>
+		<script src="static/js/bootstrap.min.js"></script>
+		<script src="static/js/toolkit.min.js"></script>
 	</body>
 </html>
