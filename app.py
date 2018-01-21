@@ -26,6 +26,7 @@ import os
 import hmac
 import hashlib
 from functools import wraps
+from urllib.parse import urlencode
 import asyncio
 
 from sanic import Sanic
@@ -33,7 +34,8 @@ from sanic.response import html, text, redirect, HTTPResponse
 from sanic_session import InMemorySessionInterface
 from motor.motor_asyncio import AsyncIOMotorClient
 from jinja2 import Environment, PackageLoader
-from urllib.parse import urlencode
+
+import discord
 import aiohttp
 import ujson
 
