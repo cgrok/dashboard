@@ -122,7 +122,7 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    return render_template('index')
+    return render_template('index', session=request['session'])
 
 # @app.get('/api/bots/<bot_id:int>')
 # @authrequired()
