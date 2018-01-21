@@ -27,7 +27,6 @@ import hmac
 import hashlib
 from functools import wraps
 import asyncio
-import platform
 
 from sanic import Sanic
 from sanic.response import html, text, redirect, HTTPResponse
@@ -43,11 +42,7 @@ from utils.user import User
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
-try:
-    if platform.system() != 'Linux':
-        dev_mode = True
-except ModuleNotFoundError:
-    dev_mode = False
+dev_mode = bool(os.getenv('VSCODE_PID'))
 
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
