@@ -26,32 +26,45 @@ import os
 import hmac
 import hashlib
 from functools import wraps
+import asyncio
+import platform
 
 from sanic import Sanic
 from sanic.response import html, text, redirect, HTTPResponse
 from sanic_session import InMemorySessionInterface
 from motor.motor_asyncio import AsyncIOMotorClient
+from jinja2 import Environment, PackageLoader
 from urllib.parse import urlencode
 import aiohttp
-import discord
-import asyncio
 import ujson
+
+from utils.user import User
 
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
+if platform.system() != 'Linux':
+    dev_mode = True
+
+
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
-OAUTH2_REDIRECT_URI = 'http://botsettings.tk/callback'
+domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
+OAUTH2_REDIRECT_URI = f'http://{domain}/callback'
 
 API_BASE_URL = 'https://discordapp.com/api'
 AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
 
 app = Sanic('dash')
-session_interface = InMemorySessionInterface()
+env = Environment(loader=PackageLoader('app', 'templates'))
 
-app.static('/static', './html/static')
+session_interface = InMemorySessionInterface()
+app.static('/static', './static')
+
+def render_template(name, *args, **kwargs):
+    template = env.get_template(name+'.html')
+    return html(template.render(*args, **kwargs))
 
 @app.middleware('request')
 async def add_session_to_request(request):
@@ -110,68 +123,37 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    with open('html/index.html', encoding='utf-8') as h:
-        return html(h.read())
+    return render_template('index')
 
-@app.get('/api/bots/<bot_id:int>')
-@authrequired()
-async def get_bot_info(request, bot_id):
-    data = await app.db.bot_info.find_one({"bot_id": bot_id})
-    if not data:
-        return error('Invalid bot ID', 404)
-    data.pop('_id')
-    data.pop('bot_token')
-    data.pop('bot_id')
-    return json(data)
+# @app.get('/api/bots/<bot_id:int>')
+# @authrequired()
+# async def get_bot_info(request, bot_id):
+#     data = await app.db.bot_info.find_one({"bot_id": bot_id})
+#     if not data:
+#         return error('Invalid bot ID', 404)
+#     data.pop('_id')
+#     data.pop('bot_token')
+#     data.pop('bot_id')
+#     return json(data)
 
-@app.post('/api/bots/<bot_id:int>')
-@authrequired(admin=True)
-async def set_bot_info(request, bot_id):
-    data = request.json
-    await app.db.bot_info.update_one(
-        {"bot_id": bot_id},
-        {"$set": data}, upsert=True
-        )
-    return json({'success': True})
+# @app.post('/api/bots/<bot_id:int>')
+# @authrequired(admin=True)
+# async def set_bot_info(request, bot_id):
+#     data = request.json
+#     await app.db.bot_info.update_one(
+#         {"bot_id": bot_id},
+#         {"$set": data}, upsert=True
+#         )
+#     return json({'success': True})
 
 @app.get('/login')
 async def login(request):
     data = {
-        "scope": "identify guilds",
+        "scope": "identify",
         "client_id": OAUTH2_CLIENT_ID,
         "response_type": "code"
     }
     return redirect(f"{AUTHORIZATION_BASE_URL}?{urlencode(data)}")
-
-@app.get('/callback')
-async def oauth_callback(request):
-    code = request.raw_args.get('code')
-    token = await fetch_token(code)
-    request['session']['logged_in'] = True
-    request['session']['discord_token'] = token['access_token']
-    return redirect(app.url_for('profile'))
-
-@app.get('/logout') 
-@authrequired()
-async def logout(request):
-    request['session'].clear()
-    return text('Logged out!')
-
-@app.get('/profile')
-@authrequired()
-async def profile(request):
-    token = request['session']['discord_token']
-    headers = {"Authorization": f"Bearer {token}"}
-    user = await app.session.get(f"{API_BASE_URL}/users/@me", headers=headers)
-    guilds = await app.session.get(f"{API_BASE_URL}/users/@me/guilds", headers=headers)
-    return json((dict(user=await user.json(), guilds=await guilds.json())))
-
-@app.post('/hooks/github')
-async def upgrade(request):
-    if not validate_payload(request):
-        return error()
-    app.loop.create_task(restart_later())
-    return json({'success': True})
 
 async def fetch_token(code):
     data = {
@@ -186,6 +168,46 @@ async def fetch_token(code):
         json = await resp.json()
         print(json)
         return json
+
+async def _get_user_info(token):
+    headers = {"Authorization": f"Bearer {token}"}
+    async with app.session.get(f"{API_BASE_URL}/users/@me", headers=headers) as resp:
+        return await resp.json()
+
+def get_user(request):
+    data = request['session']['user']
+    return User(data=data)
+
+@app.get('/callback')
+async def oauth_callback(request):
+    code = request.raw_args.get('code')
+    token = await fetch_token(code)
+    access_token = token.get('access_token')
+    if access_token is not None:
+        request['session']['access_token'] = access_token
+        request['session']['logged_in'] = True
+        request['session']['user'] = await _get_user_info(access_token)
+        return redirect(app.url_for('profile'))
+    return redirect(app.url_for('login'))
+
+@app.get('/logout') 
+@authrequired()
+async def logout(request):
+    request['session'].clear()
+    return text('Logged out!')
+
+@app.get('/profile')
+@authrequired()
+async def profile(request):
+    user = get_user(request)
+    return render_template('profile', user=user)
+
+@app.post('/hooks/github')
+async def upgrade(request):
+    if not validate_payload(request):
+        return error()
+    app.loop.create_task(restart_later())
+    return json({'success': True})
 
 def format_embed(event):
     event = event.lower()
@@ -239,7 +261,7 @@ def error(reason, status=401):
         }, status=status)
 
 if __name__ == '__main__':
-    if os.getenv('VSCODE_PID'): # development
+    if dev_mode: # development
         app.run()
     else: 
         app.run(host='0.0.0.0', port=80)

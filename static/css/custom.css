@@ -1,0 +1,45 @@
+body
+{
+	background-color: #e4e4e4;
+}
+.nav-wrapper
+{
+	padding-left:1%;
+}
+.col.s12
+{
+	padding-left:0%;
+	padding-right:0%;
+}
+a, span
+{
+	font-family: "Duru Sans";
+}
+.dashU
+{
+	font-size: 2vmax;
+}
+#rst
+{
+	font-size: 12;
+}
+.card.grey.lighten-3
+{
+	position:relative;
+	padding-left:2em;
+	padding-right:2em;
+	padding-bottom: 2em;
+	padding-top:2em;
+}
+.card.deep-orange.lighten-2
+{
+	color: white;
+	position: relative;
+	width: 100%; 
+	z-index:1;
+}
+.container.txt
+{
+	margin-top:10%;
+}
+
