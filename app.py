@@ -43,9 +43,11 @@ from utils.user import User
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
-if platform.system() != 'Linux':
-    dev_mode = True
-
+try:
+    if platform.system() != 'Linux':
+        dev_mode = True
+except ModuleNotFoundError:
+    dev_mode = False
 
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
@@ -215,7 +217,7 @@ def format_embed(event):
     if event == 'update':
         em.title = event.title()
     elif event == 'deploy':
-        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s (%cr)"'
+        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H)"'
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
         else:
