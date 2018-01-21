@@ -150,7 +150,8 @@ async def login(request):
     data = {
         "scope": "identify",
         "client_id": OAUTH2_CLIENT_ID,
-        "response_type": "code"
+        "response_type": "code",
+        "redirect_uri": OAUTH2_REDIRECT_URI
     }
     return redirect(f"{AUTHORIZATION_BASE_URL}?{urlencode(data)}")
 
