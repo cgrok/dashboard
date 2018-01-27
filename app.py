@@ -58,7 +58,7 @@ TOKEN_URL = API_BASE_URL + '/oauth2/token'
 app = Sanic('dash')
 env = Environment(loader=PackageLoader('app', 'templates'))
 
-session_interface = InMemorySessionInterface()
+session_interface = InMemorySessionInterface(domain=domain)
 app.static('/static', './static')
 
 def render_template(name, *args, **kwargs):
