@@ -1,0 +1,57 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+body {
+  background-color: #2C2F33;
+  color: white;
+}
+
+nav {
+  background-color: #7289DA;
+}
+
+.btn-large {
+  background-color: #7289DA;
+}
+
+.btn-large:hover {
+  background-color: #7289DA;
+}
+
+.btn-large:visited {
+  background-color: #7289DA;
+}
+
+.side-nav {
+  background-color: #7289DA;
+}
+
+.material-icons {
+  color: #7289DA;
+}
+
+#dashbots {
+  font-family: 'Bowlby One SC', cursive;
+  color: #7289DA;
+  user-select: none;
+}
+
+#dash {
+  color: white;
+}
+
+#discord {
+  color: #7289DA;
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}

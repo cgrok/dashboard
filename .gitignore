@@ -102,3 +102,4 @@ ENV/
 .vscode/settings.json
 
 *.json
+.DS_Store

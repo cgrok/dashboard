@@ -1,60 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>DashBots</title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Dash</title>
-		<meta charset="utf-8">
-		<link rel="stylesheet" type="text/css" href="static/css/materialize.min.css">
-		<link rel="stylesheet" type="text/css" href="static/css/custom.css">
-		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<link href='https://fonts.googleapis.com/css?family=Duru Sans' rel='stylesheet'>
-	</head>
-	<body>
-		<div class="row">
-			<div class="col s12">
-				<nav>
-					<div class="nav-wrapper teal lighten-2">
-						<a class="brand-logo" href="#"><span class="dashU">Dash</span></a>
-						<ul id="nav-mobile" class="right">
-							{% if not session['logged_in'] %}
-							<li><a href="/login">Login</a></li>
-							{% else %}
-							<li><a href="/dashboard">Dashboard</a></li>
-							<li><a href="/profile">Profile</a></li>
-							<li><a href="/logout">Logout</a></li>
-							{% endif %}
-						</ul>
-					</div>
-				</nav>
-			</div>
-		</div>
-		<div class="container txt">
-			<div class="row">
-				<div class="col s6 offset-s3">
-					<div class="card deep-orange lighten-2 center-align z-depth-1">
-						<div class="card-content">
-							<span id="dashtitle">Dash</span>
-						</div>
-					</div>			
-					<div class="card grey lighten-3 z-depth-1">
-						<div class="card-content">
-							<span id="rst">Manage your custom bots with ease in one place.</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<footer class="page-footer grey darken-1" style="position:fixed;bottom:0;left:0;width:100%;">
-			<div class="container">
-				<div class="row">
-					<div class="col s12 center-align">
-						<span>© Copyright cgrok 2018</span>
-					</div>
-				</div>
-			</div>
-		</footer>
-		<script src="static/js/jquery-3.2.1.min.js"></script>
-		<script src="static/js/materialize.min.js"></script>
-	</body>
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="static/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
+
+</head>
+<body>
+  <nav class="lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><i class="material-icons" id='dash'>dashboard</i></a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="/login" class="waves-effect"><i class="left material-icons" id='dash'>keyboard_tab</i>Login</a></li>
+        <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
+      </ul>
+      <ul id="nav-mobile" class="side-nav">
+        <li><a id='dash' href="/login" class="waves-effect">Login</a></li>
+        <li><a id='dash' href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
+      </ul>
+      <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="material-icons" id='dash'>menu</i></a>
+    </div>
+  </nav>
+  <br><br>
+  <br><br><br>
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <h1 class="header center" id='dashbots'>DashBots</h1>
+      <div class="row center">
+        <h5 class="header col s12 light">Manage your custom made discord bots with ease.</h5>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row">
+        <div class="col s12 m6">
+          <div class="icon-block">
+            <h2 class="center"><i class="material-icons">palette</i></h2>
+            <h5 class="center">Customisable</h5>
+            <p class="center light">Configure your private bot with ease through the use of this dashboard. Your bot is completely customisable, you have the ability to change it's name, profile picture and presence at any time.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m6">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+            <h5 class="center">Coded for you</h5>
+
+            <p class="center light">Your bot is coded specifically for you using python, discord.py and our private bot framework! Add a new level of professionalism to your server with custom functionality and commands as requested.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="static/js/materialize.min.js"></script>
+  <script src="static/js/init.js"></script>
+
+  </body>
 </html>
