@@ -264,5 +264,5 @@ if __name__ == '__main__':
     if dev_mode: # development
         app.run()
     else: 
-        app.run(host='0.0.0.0', port=80)
+        app.run(host='botsettings.tk', port=80)
 
