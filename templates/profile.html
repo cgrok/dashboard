@@ -1,18 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>DashBots - {{ user.name }}</title>
-
-        <!-- CSS  -->
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link href="static/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
-        <link href="static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
-        <link href="static/css/animate.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
-        <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
-        <link rel="stylesheet" href="static/js/sweetalert.all.min.js">
-    </head>
-
-    <body>
+{% include 'header.html' %}
+        <br>
+        <br>
         <div class="container">
             <h1 id='greeting' >Hello {{ user.name }}!</h1>
             <img id='avatar' src="{{ user.avatar_url_as(size=256) }}">

@@ -1,48 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>DashBots</title>
-
-    <!-- CSS  -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="static/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link href="static/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link href="static/css/animate.min.css" type="text/css" rel="stylesheet" media="screen,projection" />
-    <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
-    <link rel="stylesheet" href="static/js/sweetalert.all.min.js">
-
-  </head>
-
-  <body>
-    <ul id="dropdown1" class="dropdown-content">
-      <li><a href="/profile">Profile</a></li>
-      <li class="divider"></li>
-      <li><a href="/logout">Logout</a></li>
-    </ul>
-
-    <nav class="lighten-1" role="navigazion">
-      <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><i class="material-icons" id='dash'>dashboard</i></a>
-        <ul class="right hide-on-med-and-down">
-          <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord  <img class='nav-icon' width='25px' src="/static/img/discord-logo.svg"></a></li>
-          {% if not session.logged_in %}
-          <li><a href="/login" class="waves-effect"><i class="right material-icons" id='dash'>account_circle</i>Login</a></li>
-          {% else %}
-          <li>
-            <a class="dropdown-button" href="#!" data-activates="dropdown1">{{ user.name }}
-              <img class='circle nav-icon' width='25px' src="{{ user.avatar_url_as(format='png') }}">
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-        <ul id="nav-mobile" class="side-nav">
-          <li><a href="/login" class="waves-effect">Login</a></li>
-          <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
-        </ul>
-        <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="material-icons" id='dash'>menu</i></a>
-      </div>
-    </nav>
+{% include 'header.html' %}
     <br><br>
     <br><br>
     <div class="section no-pad-bot" id="index-banner">
