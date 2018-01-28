@@ -31,21 +31,18 @@ nav {
   background-color: #7289DA;
 }
 
-.material-icons {
-  color: #7289DA;
-}
-
 #dashbots {
   font-family: 'Bowlby One SC', cursive;
   color: #7289DA;
   user-select: none;
 }
 
-#dash {
-  color: white;
+.nav-icon {
+  vertical-align: middle; 
+  margin-left: 5px;
 }
 
-#discord {
+.discord {
   color: #7289DA;
 }
 

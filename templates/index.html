@@ -12,16 +12,31 @@
   <link href="https://fonts.googleapis.com/css?family=Bowlby+One+SC" rel="stylesheet">
 
 </head>
+
 <body>
-  <nav class="lighten-1" role="navigation">
+  <ul id="dropdown1" class="dropdown-content">
+      <li><a href="/profile">Profile</a></li>
+      <li class="divider"></li>
+      <li><a href="/logout">Logout</a></li>
+  </ul>
+
+  <nav class="lighten-1" role="navigazion">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><i class="material-icons" id='dash'>dashboard</i></a>
       <ul class="right hide-on-med-and-down">
-        <li><a href="/login" class="waves-effect"><i class="left material-icons" id='dash'>keyboard_tab</i>Login</a></li>
         <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
+        {% if not session.logged_in %}
+        <li><a href="/login" class="waves-effect"><i class="right material-icons" id='dash'>keyboard_tab</i>Login</a></li>
+        {% else %}
+        <li>
+          <a class="dropdown-button" href="#!" data-activates="dropdown1">{{ user.name }} 
+            <img class='circle nav-icon' width='20px' src="{{ user.avatar_url_as(format='png') }}">
+          </a>
+        </li>
+        {% endif %}
       </ul>
       <ul id="nav-mobile" class="side-nav">
-        <li><a id='dash' href="/login" class="waves-effect">Login</a></li>
-        <li><a id='dash' href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
+        <li><a href="/login" class="waves-effect">Login</a></li>
+        <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
       </ul>
       <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="material-icons" id='dash'>menu</i></a>
     </div>
@@ -49,7 +64,7 @@
       <div class="row">
         <div class="col s12 m6">
           <div class="icon-block">
-            <h2 class="center"><i class="material-icons">palette</i></h2>
+            <h2 class="center discord"><i class="material-icons">palette</i></h2>
             <h5 class="center">Customisable</h5>
             <p class="center light">Configure your private bot with ease through the use of this dashboard. Your bot is completely customisable, you have the ability to change it's name, profile picture and presence at any time.</p>
           </div>
@@ -57,7 +72,7 @@
 
         <div class="col s12 m6">
           <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+            <h2 class="center discord"><i class="material-icons">group</i></h2>
             <h5 class="center">Coded for you</h5>
 
             <p class="center light">Your bot is coded specifically for you using python, discord.py and our private bot framework! Add a new level of professionalism to your server with custom functionality and commands as requested.</p>

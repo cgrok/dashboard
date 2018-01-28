@@ -40,15 +40,17 @@ import aiohttp
 import ujson
 
 from utils.user import User
+from utils.utils import get_stack_variable
 
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
 dev_mode = bool(os.getenv('VSCODE_PID'))
 
+domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
+
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
-domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
 OAUTH2_REDIRECT_URI = f'http://{domain}/callback'
 
 API_BASE_URL = 'https://discordapp.com/api'
@@ -58,11 +60,19 @@ TOKEN_URL = API_BASE_URL + '/oauth2/token'
 app = Sanic('dash')
 env = Environment(loader=PackageLoader('app', 'templates'))
 
-session_interface = InMemorySessionInterface(domain=domain)
+session_interface = InMemorySessionInterface(domain=None if dev_mode else domain)
 app.static('/static', './static')
 
 def render_template(name, *args, **kwargs):
     template = env.get_template(name+'.html')
+    request = get_stack_variable('request')
+    user = None
+    if request['session'].get('logged_in'):
+        user = get_user(request)
+    
+    kwargs['request'] = request
+    kwargs['session'] = request['session']
+    kwargs['user'] = user
     return html(template.render(*args, **kwargs))
 
 @app.middleware('request')
@@ -122,7 +132,7 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    return render_template('index', session=request['session'])
+    return render_template('index')
 
 # @app.get('/api/bots/<bot_id:int>')
 # @authrequired()
@@ -187,14 +197,15 @@ async def oauth_callback(request):
         request['session']['access_token'] = access_token
         request['session']['logged_in'] = True
         request['session']['user'] = await _get_user_info(access_token)
-        return redirect(app.url_for('profile'))
+        print('logged in')
+        return redirect(app.url_for('index'))
     return redirect(app.url_for('login'))
 
 @app.get('/logout') 
 @authrequired()
 async def logout(request):
     request['session'].clear()
-    return text('Logged out!')
+    return redirect(app.url_for('index'))
 
 @app.get('/profile')
 @authrequired()
