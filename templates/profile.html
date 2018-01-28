@@ -22,11 +22,6 @@
         <h1 id='greeting' >Hello {{ user.name }}!</h1>
         <img id='avatar' src="{{ user.avatar_url_as(size=256) }}">
         <hr style='clear:both'>
-        <style>
-            hr{
-                color: black;
-            }
-        </style>
         <p>Select a bot that you own below to proceed to it's dashboard.</p>
         <form>
             <select name="Bots">
@@ -42,3 +37,9 @@
         </footer>
     </body>
 </html>
+
+<style>
+    body{
+        background-color: #424242;
+    }
+</style>
