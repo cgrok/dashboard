@@ -1,0 +1,6 @@
+{
+    "mongo_url": "here_is_ur_mongodb_uri",
+    "client_id": 1234567,
+    "client_secret": "extreme_secrets",
+    "dev_mode": true
+}
