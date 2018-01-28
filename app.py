@@ -45,7 +45,7 @@ from utils.utils import get_stack_variable
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
-dev_mode = bool(os.getenv('VSCODE_PID'))
+dev_mode = CONFIG.get('dev_mode', False)
 
 domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
 
