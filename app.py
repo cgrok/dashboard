@@ -236,7 +236,6 @@ def format_embed(event):
     return {'embeds': [em.to_dict()]}
 
 async def restart_later():
-    await asyncio.sleep(5)
     app.session.close()
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
