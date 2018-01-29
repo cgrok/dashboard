@@ -220,9 +220,8 @@ async def upgrade(request):
         return error()
     if any('[DEPLOY]' in c['message'] for c in request.json['commits']):
         await app.session.post(
-            app.webhook_url,
-            json=format_embed('update')
-        )
+            app.webhook_url, json=format_embed('update')
+            )
         app.loop.create_task(restart_later())
     return json({'success': True})
 
@@ -275,4 +274,3 @@ def error(reason, status=401):
 
 if __name__ == '__main__':
     app.run() if dev_mode else app.run(host='botsettings.tk', port=80)
-
