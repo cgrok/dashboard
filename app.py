@@ -49,6 +49,12 @@ dev_mode = CONFIG.get('dev_mode', False)
 
 domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
 
+DEVELOPERS = [
+    325012556940836864,
+    271747354472873994,
+    126321762483830785
+]
+
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
 OAUTH2_REDIRECT_URI = f'http://{domain}/callback'
@@ -199,6 +205,9 @@ async def profile(request):
         '$or': [{'owner_id': user.id}, 
         {'allowed_users': user.id}]
         }
+    
+    if user.id in DEVELOPERS:
+        query = {}
 
     async for bot in app.db.metadata.find(query):
         bots.append(bot)

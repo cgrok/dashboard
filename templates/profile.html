@@ -31,8 +31,10 @@
                                     </span>
                                     {% if bot.owner_id == user.id %}
                                     (Owner)
-                                    {% else %}
+                                    {% elif user.id in bot.allowed_users %}
                                     (Manager)
+                                    {% else %}
+                                    (Dev Access)
                                     {% endif %}
                                 </div>
                             </div>
