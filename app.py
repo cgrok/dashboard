@@ -134,27 +134,6 @@ async def aexit(app, loop):
 async def index(request):
     return render_template('index')
 
-# @app.get('/api/bots/<bot_id:int>')
-# @authrequired()
-# async def get_bot_info(request, bot_id):
-#     data = await app.db.bot_info.find_one({"bot_id": bot_id})
-#     if not data:
-#         return error('Invalid bot ID', 404)
-#     data.pop('_id')
-#     data.pop('bot_token')
-#     data.pop('bot_id')
-#     return json(data)
-
-# @app.post('/api/bots/<bot_id:int>')
-# @authrequired(admin=True)
-# async def set_bot_info(request, bot_id):
-#     data = request.json
-#     await app.db.bot_info.update_one(
-#         {"bot_id": bot_id},
-#         {"$set": data}, upsert=True
-#         )
-#     return json({'success': True})
-
 @app.get('/login')
 async def login(request):
     data = {
@@ -211,7 +190,17 @@ async def logout(request):
 @authrequired()
 async def profile(request):
     user = get_user(request)
-    return render_template('profile', user=user)
+    bots = []
+
+    query = {
+        '$or': [{'owner_id': user.id}, 
+        {'allowed_users': user.id}]
+        }
+
+    async for bot in app.db.metadata.find(query):
+        bots.append(bot)
+
+    return render_template('profile', user=user, bots=bots)
 
 @app.post('/hooks/github')
 async def upgrade(request):

@@ -2,12 +2,43 @@
         <br>
         <br>
         <div class="container">
-            <a>
-                <img class="circle responsive-img" alt="" height="128" id='avatar' src="{{ user.avatar_url_as(size=256) }}">Hello {{ user.name }}!
-            </a>
-            {% if user.bots %} {% for bot in user.bots %}
-                <li> {{ bot }} </li>
-            {% else %}
-                <p> You dont own any custom bot at the moment... </p>
+
+            <div class="section no-pad-bot" id="index-banner">
+                <div class="container">
+                    <h1 class="animated jackInTheBox header center" id='dashbots'>Hey {{ user.name }}!</h1>
+                    <div class="row center">
+                    {% if bots %}
+                    <h5 class="header col s12 light">Please select one of the bots you own or manage below.</h5>
+                    {% else %}
+                    <h5 class="header col s12 light">Unfortunately you do not own or manage any bots as of yet. Please head on over to the discord server to order one today!</h5>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if bots %} 
+            <div class="row">
+            {% for bot in bots %}
+                <div class="col s12 m6 l4">
+                    <div class="card center hoverable" style='background-color:#2C2F33'>
+                        <div class="card-content">
+                            <div class="row  valign-wrapper">
+                                <div class="col s4">
+                                    <img src="{{ bot.avatar_url }}" alt="" class="circle responsive-img"> <!-- notice the "circle" class -->
+                                </div>
+                                <div class="col s8">
+                                    <span class="card-title grey-text">
+                                        <p>{{ bot.bot_name }}</p> 
+                                    </span>
+                                </div>
+                            </div>
+                      </div>
+                      <div class="card-action">
+                        <a href="/bots/{{ bot.code_name }}" class='btn-large waves-effect waves-light'>Select</a>
+                      </div>
+                    </div>
+                  </div>
+            {% endfor %}
+            </div>
             {% endif %}
-{% include 'footer.html' %}
+        </div>
