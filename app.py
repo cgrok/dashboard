@@ -218,23 +218,25 @@ async def profile(request):
 async def upgrade(request):
     if not validate_payload(request):
         return error()
-    app.loop.create_task(restart_later())
+    if any('[DEPLOY]' in c['message'] for c in request.json['commits']):
+        await app.session.post(
+            app.webhook_url,
+            json=format_embed('update')
+        )
+        app.loop.create_task(restart_later())
     return json({'success': True})
 
 def format_embed(event):
-    event = event.lower()
-    em = discord.Embed(color=discord.Color.green())
+    em = discord.Embed()
     if event == 'update':
-        em.title = event.title()
+        em.title = '[Info] Website update and restart started.'
+        em.color = discord.Color.blue()
     elif event == 'deploy':
-        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H)"'
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
-        em.title = event.title()
-        em.description = os.popen(cmd).read().strip()
-    return {'embeds': [em.to_dict()]}
+        em.title = '[Success] Website successfully deployed.'
+        em.color = discord.Color.green()
+    return {
+        'embeds': [em.to_dict()]
+        }
 
 async def restart_later():
     app.session.close()
@@ -272,8 +274,5 @@ def error(reason, status=401):
         }, status=status)
 
 if __name__ == '__main__':
-    if dev_mode: # development
-        app.run()
-    else: 
-        app.run(host='botsettings.tk', port=80)
+    app.run() if dev_mode else app.run(host='botsettings.tk', port=80)
 
