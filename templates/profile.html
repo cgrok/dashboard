@@ -1,51 +1,52 @@
-{% include 'header.html' %}
-        <br>
-        <br>
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<br>
+<div class="container">
+    <div class="section no-pad-bot" id="index-banner">
         <div class="container">
-            <div class="section no-pad-bot" id="index-banner">
-                <div class="container">
-                    <h1 class="animated jackInTheBox header center" id='dashbots'>Hey {{ user.name }}!</h1>
-                    <div class="row center">
-                    {% if bots %}
-                    <h5 class="header col s12 light">Please select one of the bots you own or manage below.</h5>
-                    {% else %}
-                    <h5 class="header col s12 light">Unfortunately you do not own or manage any bots as of yet. Please head on over to the discord server to order one today!</h5>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            {% if bots %} 
-            <div class="row">
-            {% for bot in bots %}
-                <div class="col s12 m6 l4">
-                    <div class="card center hoverable" style='background-color:#2C2F33'>
-                        <div class="card-content">
-                            <div class="row valign-wrapper">
-                                <div class="col s4">
-                                    <img src="{{ bot.avatar_url }}" class="circle responsive-img right"> <!-- notice the "circle" class -->
-                                </div>
-                                <div class="col s8">
-                                    <span class="card-title grey-text">
-                                        <p>{{ bot.bot_name }}</p> 
-                                    </span>
-                                    {% if bot.owner_id == user.id %}
-                                    (Owner)
-                                    {% elif user.id in bot.allowed_users %}
-                                    (Manager)
-                                    {% else %}
-                                    (Dev Access)
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-action">
-                            <a href="#!" id="download-button" class="btn-large waves-effect waves-light">Select</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            <h1 class="animated jackInTheBox header center" id='dashbots'>Hey {{ user.name }}!</h1>
+            <div class="row center">
+            {% if bots %}
+            <h5 class="header col s12 light">Please select one of the bots you own or manage below.</h5>
+            {% else %}
+            <h5 class="header col s12 light">Unfortunately you do not own or manage any bots as of yet. Please head on over to the discord server to order one today!</h5>
             </div>
             {% endif %}
         </div>
-        {% include 'footer.html' %}
+    </div>
+
+    {% if bots %} 
+    <div class="row">
+    {% for bot in bots %}
+        <div class="col s12 m6 l4">
+            <div class="card center hoverable" style='background-color:#2C2F33'>
+                <div class="card-content">
+                    <div class="row valign-wrapper">
+                        <div class="col s4">
+                            <img src="{{ bot.avatar_url }}" class="circle responsive-img right"> <!-- notice the "circle" class -->
+                        </div>
+                        <div class="col s8">
+                            <span class="card-title grey-text">
+                                <p>{{ bot.bot_name }}</p> 
+                            </span>
+                            {% if bot.owner_id == user.id %}
+                            (Owner)
+                            {% elif user.id in bot.allowed_users %}
+                            (Manager)
+                            {% else %}
+                            (Dev Access)
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="#!" id="download-button" class="btn-large waves-effect waves-light">Select</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

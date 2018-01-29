@@ -1,0 +1,49 @@
+<ul id="dropdown1" class="dropdown-content">
+    <li>
+        <a href="/profile">Profile</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+        <a href="/logout">Logout</a>
+    </li>
+</ul>
+
+<div class='navbar-fixed'>
+    <nav class="lighten-1" role="navigazion">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="/" class="brand-logo">
+                <i class="material-icons" id='dash'>dashboard</i>
+            </a>
+            <ul class="right hide-on-med-and-down">
+                <li>
+                    <a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord
+                        <img class='nav-icon' width='25px' src="/static/img/discord-logo.svg">
+                    </a>
+                </li>
+                {% if not session.logged_in %}
+                <li>
+                    <a href="/login" class="waves-effect"><i class="right material-icons" id='dash'>account_circle</i>Login</a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="dropdown-button waves-effect" href="#!" data-activates="dropdown1">{{ user.name }}
+                        <img class='circle nav-icon' width='25px' src="{{ user.avatar_url }}">
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul id="nav-mobile" class="side-nav">
+                {% if not session.logged_in %}
+                <li><a href="/login" class="waves-effect">Login</a></li>
+                {% else %}
+                <li><a href="/profile" class="waves-effect">Profile</a></li>
+                <li><a href="/logout" class="waves-effect">Logout</a></li>
+                {% endif %}
+                <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
+            </ul>
+            <a href="/" data-activates="nav-mobile" class="button-collapse">
+                <i class="material-icons" id='dash'>menu</i>
+            </a>
+        </div>
+    </nav>
+</div>
