@@ -219,9 +219,7 @@ async def upgrade(request):
     if not validate_payload(request):
         return error()
     if any('[DEPLOY]' in c['message'] for c in request.json['commits']):
-        await app.session.post(
-            app.webhook_url, json=format_embed('update')
-            )
+        await app.session.post(app.webhook_url, json=format_embed('update'))
         app.loop.create_task(restart_later())
     return json({'success': True})
 
