@@ -2,7 +2,6 @@
         <br>
         <br>
         <div class="container">
-
             <div class="section no-pad-bot" id="index-banner">
                 <div class="container">
                     <h1 class="animated jackInTheBox header center" id='dashbots'>Hey {{ user.name }}!</h1>
@@ -22,23 +21,24 @@
                 <div class="col s12 m6 l4">
                     <div class="card center hoverable" style='background-color:#2C2F33'>
                         <div class="card-content">
-                            <div class="row  valign-wrapper">
+                            <div class="row valign-wrapper">
                                 <div class="col s4">
-                                    <img src="{{ bot.avatar_url }}" alt="" class="circle responsive-img"> <!-- notice the "circle" class -->
+                                    <img src="{{ bot.avatar_url }}" style='margin-top: 20%' class="circle responsive-img"> <!-- notice the "circle" class -->
                                 </div>
                                 <div class="col s8">
-                                    <span class="card-title grey-text">
+                                    <span class="card-title grey-text" style='margin-top: 20%'>
                                         <p>{{ bot.bot_name }}</p> 
                                     </span>
                                 </div>
                             </div>
-                      </div>
-                      <div class="card-action">
-                        <a href="/bots/{{ bot.code_name }}" class='btn-large waves-effect waves-light'>Select</a>
-                      </div>
+                        </div>
+                        <div class="card-action">
+                            <a href="#!" id="download-button" class="btn-large waves-effect waves-light">Select</a>
+                        </div>
                     </div>
-                  </div>
+                </div>
             {% endfor %}
             </div>
             {% endif %}
         </div>
+        {% include 'footer.html' %}
