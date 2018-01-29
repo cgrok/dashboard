@@ -138,6 +138,8 @@ async def index(request):
 
 @app.get('/login')
 async def login(request):
+    if request['session'].get('logged_in'):
+        request['session'].clear()
     data = {
         "scope": "identify",
         "client_id": OAUTH2_CLIENT_ID,

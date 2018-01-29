@@ -23,12 +23,17 @@
                         <div class="card-content">
                             <div class="row valign-wrapper">
                                 <div class="col s4">
-                                    <img src="{{ bot.avatar_url }}" style='margin-top: 20%' class="circle responsive-img"> <!-- notice the "circle" class -->
+                                    <img src="{{ bot.avatar_url }}" class="circle responsive-img right"> <!-- notice the "circle" class -->
                                 </div>
                                 <div class="col s8">
-                                    <span class="card-title grey-text" style='margin-top: 20%'>
+                                    <span class="card-title grey-text">
                                         <p>{{ bot.bot_name }}</p> 
                                     </span>
+                                    {% if bot.owner_id == user.id %}
+                                    (Owner)
+                                    {% else %}
+                                    (Manager)
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
