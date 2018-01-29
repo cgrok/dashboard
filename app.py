@@ -103,13 +103,15 @@ def authrequired(admin=False):
             if valid_token:
                 return await func(request, *args, **kwargs)
             if admin is False and not request['session'].get('logged_in'):
-                return text('You need to be logged in to use this endpoint.')
+                return redirect(app.url_for('login'))
             else:
                 return await func(request, *args, **kwargs)
             if admin is True and not valid_token:
                 return error('Invalid authorization token provided.')
         return wrapper
     return decorator
+
+
 
 @app.listener('before_server_start')
 async def init(app, loop):
@@ -155,7 +157,6 @@ async def fetch_token(code):
 
     async with app.session.post(f"{TOKEN_URL}?{urlencode(data)}") as resp:
         json = await resp.json()
-        print(json)
         return json
 
 async def _get_user_info(token):
@@ -177,7 +178,7 @@ async def oauth_callback(request):
         request['session']['logged_in'] = True
         request['session']['user'] = await _get_user_info(access_token)
         print('logged in')
-        return redirect(app.url_for('index'))
+        return redirect(app.url_for('profile'))
     return redirect(app.url_for('login'))
 
 @app.get('/logout') 
