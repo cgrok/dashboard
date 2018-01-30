@@ -52,7 +52,8 @@ domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
 DEVELOPERS = [
     325012556940836864,
     271747354472873994,
-    126321762483830785
+    126321762483830785,
+    180314310298304512
 ]
 
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
@@ -243,10 +244,7 @@ async def restart_later():
 def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
     # Handle the common case first for performance reasons.
     if isinstance(s, bytes):
-        if encoding == 'utf-8':
-            return s
-        else:
-            return s.decode('utf-8', errors).encode(encoding, errors)
+        return s
     if isinstance(s, memoryview):
         return bytes(s)
     else:
