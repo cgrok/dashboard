@@ -26,32 +26,61 @@ import os
 import hmac
 import hashlib
 from functools import wraps
+from urllib.parse import urlencode
+import asyncio
 
 from sanic import Sanic
 from sanic.response import html, text, redirect, HTTPResponse
 from sanic_session import InMemorySessionInterface
 from motor.motor_asyncio import AsyncIOMotorClient
-from urllib.parse import urlencode
-import aiohttp
+from jinja2 import Environment, PackageLoader
+
 import discord
-import asyncio
+import aiohttp
 import ujson
+
+from utils.user import User
+from utils.utils import get_stack_variable
 
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
 
+dev_mode = CONFIG.get('dev_mode', False)
+
+domain = '127.0.0.1:8000' if dev_mode else 'botsettings.tk'
+
+DEVELOPERS = [
+    325012556940836864,
+    271747354472873994,
+    126321762483830785,
+    180314310298304512
+]
+
 OAUTH2_CLIENT_ID = CONFIG.get('client_id')
 OAUTH2_CLIENT_SECRET = CONFIG.get('client_secret')
-OAUTH2_REDIRECT_URI = 'http://botsettings.tk/callback'
+OAUTH2_REDIRECT_URI = f'http://{domain}/callback'
 
 API_BASE_URL = 'https://discordapp.com/api'
 AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
 
 app = Sanic('dash')
-session_interface = InMemorySessionInterface()
+env = Environment(loader=PackageLoader('app', 'templates'))
 
-app.static('/static', './html/static')
+session_interface = InMemorySessionInterface(domain=None if dev_mode else domain)
+app.static('/static', './static')
+
+def render_template(name, *args, **kwargs):
+    template = env.get_template(name+'.html')
+    request = get_stack_variable('request')
+    user = None
+    if request['session'].get('logged_in'):
+        user = get_user(request)
+    
+    kwargs['request'] = request
+    kwargs['session'] = request['session']
+    kwargs['user'] = user
+    return html(template.render(*args, **kwargs))
 
 @app.middleware('request')
 async def add_session_to_request(request):
@@ -81,13 +110,15 @@ def authrequired(admin=False):
             if valid_token:
                 return await func(request, *args, **kwargs)
             if admin is False and not request['session'].get('logged_in'):
-                return text('You need to be logged in to use this endpoint.')
+                return redirect(app.url_for('login'))
             else:
                 return await func(request, *args, **kwargs)
             if admin is True and not valid_token:
                 return error('Invalid authorization token provided.')
         return wrapper
     return decorator
+
+
 
 @app.listener('before_server_start')
 async def init(app, loop):
@@ -110,68 +141,19 @@ async def aexit(app, loop):
 
 @app.get('/')
 async def index(request):
-    with open('html/index.html', encoding='utf-8') as h:
-        return html(h.read())
-
-@app.get('/api/bots/<bot_id:int>')
-@authrequired()
-async def get_bot_info(request, bot_id):
-    data = await app.db.bot_info.find_one({"bot_id": bot_id})
-    if not data:
-        return error('Invalid bot ID', 404)
-    data.pop('_id')
-    data.pop('bot_token')
-    data.pop('bot_id')
-    return json(data)
-
-@app.post('/api/bots/<bot_id:int>')
-@authrequired(admin=True)
-async def set_bot_info(request, bot_id):
-    data = request.json
-    await app.db.bot_info.update_one(
-        {"bot_id": bot_id},
-        {"$set": data}, upsert=True
-        )
-    return json({'success': True})
+    return render_template('index')
 
 @app.get('/login')
 async def login(request):
+    if request['session'].get('logged_in'):
+        request['session'].clear()
     data = {
-        "scope": "identify guilds",
+        "scope": "identify",
         "client_id": OAUTH2_CLIENT_ID,
-        "response_type": "code"
+        "response_type": "code",
+        "redirect_uri": OAUTH2_REDIRECT_URI
     }
     return redirect(f"{AUTHORIZATION_BASE_URL}?{urlencode(data)}")
-
-@app.get('/callback')
-async def oauth_callback(request):
-    code = request.raw_args.get('code')
-    token = await fetch_token(code)
-    request['session']['logged_in'] = True
-    request['session']['discord_token'] = token['access_token']
-    return redirect(app.url_for('profile'))
-
-@app.get('/logout') 
-@authrequired()
-async def logout(request):
-    request['session'].clear()
-    return text('Logged out!')
-
-@app.get('/profile')
-@authrequired()
-async def profile(request):
-    token = request['session']['discord_token']
-    headers = {"Authorization": f"Bearer {token}"}
-    user = await app.session.get(f"{API_BASE_URL}/users/@me", headers=headers)
-    guilds = await app.session.get(f"{API_BASE_URL}/users/@me/guilds", headers=headers)
-    return json((dict(user=await user.json(), guilds=await guilds.json())))
-
-@app.post('/hooks/github')
-async def upgrade(request):
-    if not validate_payload(request):
-        return error()
-    app.loop.create_task(restart_later())
-    return json({'success': True})
 
 async def fetch_token(code):
     data = {
@@ -184,26 +166,77 @@ async def fetch_token(code):
 
     async with app.session.post(f"{TOKEN_URL}?{urlencode(data)}") as resp:
         json = await resp.json()
-        print(json)
         return json
 
+async def _get_user_info(token):
+    headers = {"Authorization": f"Bearer {token}"}
+    async with app.session.get(f"{API_BASE_URL}/users/@me", headers=headers) as resp:
+        return await resp.json()
+
+def get_user(request):
+    data = request['session']['user']
+    return User(data=data)
+
+@app.get('/callback')
+async def oauth_callback(request):
+    code = request.raw_args.get('code')
+    token = await fetch_token(code)
+    access_token = token.get('access_token')
+    if access_token is not None:
+        request['session']['access_token'] = access_token
+        request['session']['logged_in'] = True
+        request['session']['user'] = await _get_user_info(access_token)
+        print('logged in')
+        return redirect(app.url_for('profile'))
+    return redirect(app.url_for('login'))
+
+@app.get('/logout') 
+@authrequired()
+async def logout(request):
+    request['session'].clear()
+    return redirect(app.url_for('index'))
+
+@app.get('/profile')
+@authrequired()
+async def profile(request):
+    user = get_user(request)
+    bots = []
+
+    query = {
+        '$or': [{'owner_id': user.id}, 
+        {'allowed_users': user.id}]
+        }
+    
+    if user.id in DEVELOPERS:
+        query = {}
+
+    async for bot in app.db.metadata.find(query):
+        bots.append(bot)
+
+    return render_template('profile', user=user, bots=bots)
+
+@app.post('/hooks/github')
+async def upgrade(request):
+    if not validate_payload(request):
+        return error()
+    if any('[deploy]' in c['message'] for c in request.json['commits']):
+        await app.session.post(app.webhook_url, json=format_embed('update'))
+        app.loop.create_task(restart_later())
+    return json({'success': True})
+
 def format_embed(event):
-    event = event.lower()
-    em = discord.Embed(color=discord.Color.green())
+    em = discord.Embed()
     if event == 'update':
-        em.title = event.title()
+        em.title = '[Info] Website update and restart started.'
+        em.color = discord.Color.blue()
     elif event == 'deploy':
-        cmd = r'git show -s HEAD~1..HEAD --format="[{}](https://github.com/cgrok/dash/commit/%H) %s (%cr)"'
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
-        em.title = event.title()
-        em.description = os.popen(cmd).read().strip()
-    return {'embeds': [em.to_dict()]}
+        em.title = '[Success] Website successfully deployed.'
+        em.color = discord.Color.green()
+    return {
+        'embeds': [em.to_dict()]
+        }
 
 async def restart_later():
-    await asyncio.sleep(5)
     app.session.close()
     command = 'sh ../dash.sh'
     p = os.system(f'echo {app.password}|sudo -S {command}')
@@ -211,10 +244,7 @@ async def restart_later():
 def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
     # Handle the common case first for performance reasons.
     if isinstance(s, bytes):
-        if encoding == 'utf-8':
-            return s
-        else:
-            return s.decode('utf-8', errors).encode(encoding, errors)
+        return s
     if isinstance(s, memoryview):
         return bytes(s)
     else:
@@ -239,8 +269,4 @@ def error(reason, status=401):
         }, status=status)
 
 if __name__ == '__main__':
-    if os.getenv('VSCODE_PID'): # development
-        app.run()
-    else: 
-        app.run(host='0.0.0.0', port=80)
-
+    app.run() if dev_mode else app.run(host='botsettings.tk', port=80)
