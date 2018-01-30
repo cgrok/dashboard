@@ -40,7 +40,7 @@ import aiohttp
 import ujson
 
 from utils.user import User
-from utils.utils import get_stack_variable
+from utils.utils import get_stack_variable, validate_github_payload, json
 
 with open('data/config.json') as f:
     CONFIG = ujson.loads(f.read())
@@ -65,10 +65,9 @@ AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
 
 app = Sanic('dash')
-env = Environment(loader=PackageLoader('app', 'templates'))
-
-session_interface = InMemorySessionInterface(domain=None if dev_mode else domain)
 app.static('/static', './static')
+
+env = Environment(loader=PackageLoader('app', 'templates'))
 
 def render_template(name, *args, **kwargs):
     template = env.get_template(name+'.html')
@@ -83,6 +82,13 @@ def render_template(name, *args, **kwargs):
     kwargs.update(globals())
     return html(template.render(*args, **kwargs))
 
+
+####################################
+# Server backed session middleware #
+####################################
+
+session_interface = InMemorySessionInterface(domain=None if dev_mode else domain)
+
 @app.middleware('request')
 async def add_session_to_request(request):
     await session_interface.open(request)
@@ -91,18 +97,14 @@ async def add_session_to_request(request):
 async def save_session(request, response):
     await session_interface.save(request, response)
 
-def json(data, status=200, headers=None):
-    return HTTPResponse(
-        ujson.dumps(data, indent=4), 
-        status=status,
-        headers=headers,
-        content_type='application/json'
-        )
-
 async def validate_token(request):
     exists = await app.db.admin.find_one({'token': request.token})
     return exists is not None
     
+#############################
+# Authentication decorators #
+#############################
+
 def authrequired(admin=False):
     def decorator(func):
         @wraps(func)
@@ -119,10 +121,28 @@ def authrequired(admin=False):
         return wrapper
     return decorator
 
+def bot_manager():
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(request, code_name):
+            bot = await app.db.metadata.find_one({'code_name': code_name})
+            bot.pop('_id')
+            bot.pop('bot_token', None)
+            user = get_user(request)
+            id = user.id
+            if id in bot.get('allowed_users', []) or id == bot['owner_id'] or id in DEVELOPERS:
+                return await func(request, code_name, bot, user)
+            return text('you dont have acces boi')
+        return wrapper
+    return decorator
 
+####################
+# Server init/stop #
+####################
 
 @app.listener('before_server_start')
 async def init(app, loop):
+    '''Initialize app config, database and send the status discord webhook payload.'''
     app.session = aiohttp.ClientSession(loop=loop)
     app.password = CONFIG.get('password')
     app.webhook_url = CONFIG.get('webhook_url')
@@ -138,7 +158,12 @@ async def init(app, loop):
 
 @app.listener('after_server_stop')
 async def aexit(app, loop):
+    '''Close the aiohttp client session'''
     app.session.close()
+
+#############
+# Endpoints #
+#############
 
 @app.get('/')
 async def index(request):
@@ -169,7 +194,7 @@ async def fetch_token(code):
         json = await resp.json()
         return json
 
-async def _get_user_info(token):
+async def get_user_info(token):
     headers = {"Authorization": f"Bearer {token}"}
     async with app.session.get(f"{API_BASE_URL}/users/@me", headers=headers) as resp:
         return await resp.json()
@@ -186,8 +211,7 @@ async def oauth_callback(request):
     if access_token is not None:
         request['session']['access_token'] = access_token
         request['session']['logged_in'] = True
-        request['session']['user'] = await _get_user_info(access_token)
-        print('logged in')
+        request['session']['user'] = await get_user_info(access_token)
         return redirect(app.url_for('profile'))
     return redirect(app.url_for('login'))
 
@@ -216,28 +240,16 @@ async def profile(request):
 
     return render_template('profile', user=user, bots=bots)
 
-def bot_manager(func):
-    async def wrapper(request, code_name):
-        bot = await app.db.metadata.find_one({'code_name': code_name})
-        bot.pop('_id')
-        bot.pop('bot_token', None)
-        user = get_user(request)
-        id = user.id
-        if id in bot.get('allowed_users', []) or id == bot['owner_id'] or id in DEVELOPERS:
-            return await func(request, code_name, bot, user)
-        return text('you dont have acces boi')
-    return wrapper
-
 @app.get('/bots/<code_name>')
 @authrequired()
-@bot_manager
+@bot_manager()
 async def dashboard(request, code_name, bot, user):
     return text(f'xtreme dashboard ui 1000: {ujson.dumps(bot, indent=4)}')
 
 @app.post('/hooks/github')
 async def upgrade(request):
-    if not validate_payload(request):
-        return error()
+    if not validate_github_payload(request):
+        return text('fuck off')
     if any('[deploy]' in c['message'] for c in request.json['commits']):
         await app.session.post(app.webhook_url, json=format_embed('update'))
         app.loop.create_task(restart_later())
@@ -258,34 +270,7 @@ def format_embed(event):
 async def restart_later():
     app.session.close()
     command = 'sh ../dash.sh'
-    p = os.system(f'echo {app.password}|sudo -S {command}')
-
-def fbytes(s, encoding='utf-8', strings_only=False, errors='strict'):
-    # Handle the common case first for performance reasons.
-    if isinstance(s, bytes):
-        return s
-    if isinstance(s, memoryview):
-        return bytes(s)
-    else:
-        return s.encode(encoding, errors)
-
-def validate_payload(request):
-    if not request.headers.get('X-Hub-Signature'):
-        return False
-    sha_name, signature = request.headers['X-Hub-Signature'].split('=')
-    digester = hmac.new(
-        fbytes(app.password), 
-        fbytes(request.body),
-        hashlib.sha1
-        )
-    generated = fbytes(digester.hexdigest())
-    return hmac.compare_digest(generated, fbytes(signature))
-
-def error(reason, status=401):
-    return json({
-        "error": True,
-        "message": reason
-        }, status=status)
+    os.system(f'echo {app.password}|sudo -S {command}')
 
 if __name__ == '__main__':
     app.run() if dev_mode else app.run(host='botsettings.tk', port=80)
