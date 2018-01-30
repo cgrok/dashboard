@@ -80,6 +80,7 @@ def render_template(name, *args, **kwargs):
     kwargs['request'] = request
     kwargs['session'] = request['session']
     kwargs['user'] = user
+    kwargs.update(globals())
     return html(template.render(*args, **kwargs))
 
 @app.middleware('request')
@@ -218,9 +219,11 @@ async def profile(request):
 def bot_manager(func):
     async def wrapper(request, code_name):
         bot = await app.db.metadata.find_one({'code_name': code_name})
+        bot.pop('_id')
+        bot.pop('bot_token', None)
         user = get_user(request)
         id = user.id
-        if id in bot['allowed_users'] or id == bot['owner_id'] or id in DEVELOPERS:
+        if id in bot.get('allowed_users', []) or id == bot['owner_id'] or id in DEVELOPERS:
             return await func(request, code_name, bot, user)
         return text('you dont have acces boi')
     return wrapper
@@ -229,7 +232,7 @@ def bot_manager(func):
 @authrequired()
 @bot_manager
 async def dashboard(request, code_name, bot, user):
-    return render_template('dash-metrics', bot=bot, user=user)
+    return text(f'xtreme dashboard ui 1000: {ujson.dumps(bot, indent=4)}')
 
 @app.post('/hooks/github')
 async def upgrade(request):
