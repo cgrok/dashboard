@@ -215,6 +215,22 @@ async def profile(request):
 
     return render_template('profile', user=user, bots=bots)
 
+def bot_manager(func):
+    async def wrapper(request, code_name):
+        bot = await app.db.metadata.find_one({'code_name': code_name})
+        user = get_user(request)
+        id = user.id
+        if id in bot['allowed_users'] or id == bot['owner_id'] or id in DEVELOPERS:
+            return await func(request, code_name, bot, user)
+        return text('you dont have acces boi')
+    return wrapper
+
+@app.get('/bots/<code_name>')
+@authrequired()
+@bot_manager
+async def dashboard(request, code_name, bot, user):
+    return render_template('dash-metrics', bot=bot, user=user)
+
 @app.post('/hooks/github')
 async def upgrade(request):
     if not validate_payload(request):
