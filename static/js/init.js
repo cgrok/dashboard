@@ -2,6 +2,11 @@
   $(function(){
 
     $('.button-collapse').sideNav();
+    $('.right-button-collapse').sideNav({
+      edge: 'right'
+    });
+
+
 
     $('.dropdown-button').dropdown({
       inDuration: 300,

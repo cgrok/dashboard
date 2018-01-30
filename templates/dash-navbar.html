@@ -32,12 +32,33 @@
                     </li>
                     {% endif %}
                 </ul>
-                <a href="#!" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+                <a href="#!" data-activates="nav-dash" class="button-collapse"><i class="material-icons">settings</i></a>
+                <a href="#!" data-activates="nav-mobile" class="right-button-collapse right hide-on-large-only"><i class="material-icons">menu</i></a>
             </div>
         </nav>
     </div>
     
-    <ul id="nav-mobile" class="side-nav fixed"> 
+
+
+<ul id="nav-mobile" class="side-nav"> 
+        {% if not session.logged_in %}
+        <li><a href="/login" class="waves-effect"><span class="grey-text">Login</span></a></li>
+        {% else %}
+        <div class="user-view">
+            <div class="background" style='background-color:#2D2F33'>
+            </div>
+            <a><img class="circle" src="{{ user.avatar_url }}"></a>
+            <a><span class="grey-text name">{{ user.__str__() }}</span></a>
+            <br>
+        </div> 
+        <li><a href="/bots" class="waves-effect"><span class="grey-text">Bots</span></a></li>
+        <li><a href="/logout" class="waves-effect"><span class="grey-text">Logout</span></a></li>
+        <li class='divider' style="background-color:#444649"></li>
+        {% endif %}
+        <li><a href="https://discord.gg/zw9sj5B" class="waves-effect"><span class="grey-text">Discord</span></a></li>
+    </ul>
+
+<ul id="nav-dash" class="side-nav fixed"> 
         <div class="user-view">
             <div class="background" style='background-color:#2D2F33'>
             </div>
