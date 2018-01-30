@@ -212,7 +212,7 @@ async def oauth_callback(request):
         request['session']['access_token'] = access_token
         request['session']['logged_in'] = True
         request['session']['user'] = await get_user_info(access_token)
-        return redirect(app.url_for('profile'))
+        return redirect(app.url_for('select_bot'))
     return redirect(app.url_for('login'))
 
 @app.get('/logout') 
@@ -221,9 +221,9 @@ async def logout(request):
     request['session'].clear()
     return redirect(app.url_for('index'))
 
-@app.get('/profile')
+@app.get('/bots')
 @authrequired()
-async def profile(request):
+async def select_bot(request):
     user = get_user(request)
     bots = []
 
@@ -238,13 +238,13 @@ async def profile(request):
     async for bot in app.db.metadata.find(query):
         bots.append(bot)
 
-    return render_template('profile', user=user, bots=bots)
+    return render_template('select-bot', user=user, bots=bots)
 
 @app.get('/bots/<code_name>')
 @authrequired()
 @bot_manager()
 async def dashboard(request, code_name, bot, user):
-    return text(f'xtreme dashboard ui 1000: {ujson.dumps(bot, indent=4)}')
+    return render_template('dash-metrics', bot=bot, user=user)
 
 @app.post('/hooks/github')
 async def upgrade(request):

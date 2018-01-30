@@ -1,3 +1,5 @@
-xtreme ui dashboard
+{% extends 'base.html' %}
+{% block navbar %} {% include 'dash-navbar.html' %} {% endblock %}
+{% block content %} 
 
-bot info: {{ ujson.dumps(bot, indent=4) }}
+{% endblock %}

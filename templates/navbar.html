@@ -1,10 +1,10 @@
 <ul id="dropdown1" class="dropdown-content">
     <li>
-        <a href="/profile">Profile</a>
+        <a href="/bots"><span style='color:#7289DA'>Bots</span></a>
     </li>
-    <li class="divider"></li>
+    <li class='divider' style="background-color:#444649"></li>
     <li>
-        <a href="/logout">Logout</a>
+        <a href="/logout"><span style='color:#7289DA'>Logout</span></a>
     </li>
 </ul>
 
@@ -32,18 +32,25 @@
                 </li>
                 {% endif %}
             </ul>
-            <ul id="nav-mobile" class="side-nav">
-                {% if not session.logged_in %}
-                <li><a href="/login" class="waves-effect">Login</a></li>
-                {% else %}
-                <li><a href="/profile" class="waves-effect">Profile</a></li>
-                <li><a href="/logout" class="waves-effect">Logout</a></li>
-                {% endif %}
-                <li><a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord</a></li>
-            </ul>
-            <a href="/" data-activates="nav-mobile" class="button-collapse">
-                <i class="material-icons" id='dash'>menu</i>
-            </a>
+            <a href="#!" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
         </div>
     </nav>
 </div>
+
+<ul id="nav-mobile" class="side-nav"> 
+    {% if not session.logged_in %}
+    <li><a href="/login" class="waves-effect"><span class="grey-text">Login</span></a></li>
+    {% else %}
+    <div class="user-view">
+        <div class="background" style='background-color:#2D2F33'>
+        </div>
+        <a><img class="circle" src="{{ user.avatar_url }}"></a>
+        <a><span class="grey-text name">{{ user.__str__() }}</span></a>
+        <br>
+    </div> 
+    <li><a href="/bots" class="waves-effect"><span class="grey-text">Bots</span></a></li>
+    <li><a href="/logout" class="waves-effect"><span class="grey-text">Logout</span></a></li>
+    <li class='divider' style="background-color:#444649"></li>
+    {% endif %}
+    <li><a href="https://discord.gg/zw9sj5B" class="waves-effect"><span class="grey-text">Discord</span></a></li>
+</ul>

@@ -11,8 +11,12 @@ body {
   color: white;
 }
 
-nav {
-  background-color: #7289DA;
+#dropdown1 {
+  background-color: #2C2F33;
+}
+
+#nav-mobile {
+  background-color: #24272A;
 }
 
 .btn-large {
@@ -27,7 +31,7 @@ nav {
   background-color: #7289DA;
 }
 
-.side-nav {
+nav {
   background-color: #7289DA;
 }
 

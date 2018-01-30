@@ -1,0 +1,52 @@
+<ul id="dropdown1" class="dropdown-content">
+        <li>
+            <a href="/bots"><span style='color:#7289DA'>Bots</span></a>
+        </li>
+        <li class='divider' style="background-color:#444649"></li>
+        <li>
+            <a href="/logout"><span style='color:#7289DA'>Logout</span></a>
+        </li>
+    </ul>
+    
+    <div class='navbar-fixed'>
+        <nav class="lighten-1" role="navigazion">
+            <div class="nav-wrapper container">
+                <a id="logo-container" href="/" class="brand-logo">
+                    <i class="material-icons" id='dash'>dashboard</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li>
+                        <a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord
+                            <img class='nav-icon' width='25px' src="/static/img/discord-logo.svg">
+                        </a>
+                    </li>
+                    {% if not session.logged_in %}
+                    <li>
+                        <a href="/login" class="waves-effect"><i class="right material-icons" id='dash'>account_circle</i>Login</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a class="dropdown-button waves-effect" href="#!" data-activates="dropdown1">{{ user.name }}
+                            <img class='circle nav-icon' width='25px' src="{{ user.avatar_url }}">
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <a href="#!" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+            </div>
+        </nav>
+    </div>
+    
+    <ul id="nav-mobile" class="side-nav fixed"> 
+        <div class="user-view">
+            <div class="background" style='background-color:#2D2F33'>
+            </div>
+            <a><img class="circle" src="{{ bot.avatar_url }}"></a>
+            <a><span class="grey-text name">{{ bot.bot_name }}</span></a>
+            <br>
+        </div> 
+        <li><a href="#" class="waves-effect active"><span class="grey-text">Metrics</span></a></li>
+        <li><a href="#" class="waves-effect"><span class="grey-text">Commands</span></a></li>
+        <li class='divider' style="background-color:#444649"></li>
+        <li><a href="#" class="waves-effect"><span class="grey-text">Settings</span></a></li>
+    </ul>
