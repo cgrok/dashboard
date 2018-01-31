@@ -1,6 +1,4 @@
 import os
-import hmac
-import hashlib
 from functools import wraps
 from urllib.parse import urlencode
 import asyncio
