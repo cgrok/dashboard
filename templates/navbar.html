@@ -41,10 +41,10 @@
         {% if not session.logged_in %}
         <li><a href="/login" class="waves-effect"><span class="grey-text">Login</span></a></li>
         {% else %}
-        <div class="user-view">
+        <div class="user-view center-align">
             <div class="background" style='background-color:#2D2F33'>
             </div>
-            <a><img class="circle" src="{{ user.avatar_url }}"></a>
+            <a><img class="circle" style='margin-left:37%' src="{{ user.avatar_url }}"></a>
             <a><span class="grey-text name">{{ user.__str__() }}</span></a>
             <br>
         </div> 
