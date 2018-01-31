@@ -6,10 +6,23 @@
  * Made By MaterializeCSS.com
  */
 
+          
 body {
   background-color: #23272A;
   color: white;
 }
+
+.nav-dash, .dash-content {
+  padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+  .nav-dash, .dash-content {
+    padding-left: 0;
+  }
+}
+
+
 
 #dropdown1 {
   background-color: #2C2F33;
@@ -37,6 +50,7 @@ body {
 
 nav {
   background-color: #7289DA;
+  /* z-index: 0; */
 }
 
 #dashbots {
