@@ -256,11 +256,9 @@ async def restart_later():
     command = 'sh ../dash.sh'
     os.system(f'echo {app.password}|sudo -S {command}')
 
-
 @app.exception(NotFound)
 async def handle_not_found(request, exception):
     return text("Not found.")
-
 
 if __name__ == '__main__':
     app.run() if dev_mode else app.run(host='botsettings.tk', port=80)
