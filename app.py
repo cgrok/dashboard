@@ -5,6 +5,7 @@ import asyncio
 
 from sanic import Sanic
 from sanic.response import html, text, redirect, HTTPResponse
+from sanic.exceptions import abort, NotFound
 from sanic_session import InMemorySessionInterface
 from motor.motor_asyncio import AsyncIOMotorClient
 from jinja2 import Environment, PackageLoader
@@ -98,14 +99,17 @@ def authrequired(admin=False):
 def bot_manager():
     def decorator(func):
         @wraps(func)
-        async def wrapper(request, code_name):
+        async def wrapper(request, code_name, section):
             bot = await app.db.metadata.find_one({'code_name': code_name})
+            if bot is None:
+                abort(404)
             bot.pop('_id')
             bot.pop('bot_token', None)
             user = get_user(request)
             id = user.id
-            if id in bot.get('allowed_users', []) or id == bot['owner_id'] or id in DEVELOPERS:
-                return await func(request, code_name, bot, user)
+            allowed = bot.get('allowed_users', [])
+            if id in allowed or 'everyone' in allowed or id == bot['owner_id'] or id in DEVELOPERS:
+                return await func(request, code_name, section, bot, user)
             return text('you dont have acces boi')
         return wrapper
     return decorator
@@ -202,8 +206,11 @@ async def select_bot(request):
     bots = []
 
     query = {
-        '$or': [{'owner_id': user.id}, 
-        {'allowed_users': user.id}]
+        '$or': [
+            {'owner_id': user.id}, 
+            {'allowed_users': user.id}, 
+            {'allowed_users': 'everyone'}
+            ]
         }
     
     if user.id in DEVELOPERS:
@@ -214,16 +221,19 @@ async def select_bot(request):
 
     return render_template('select-bot', user=user, bots=bots)
 
-@app.get('/bots/<code_name>')
+@app.get('/bots/<code_name>/<section>')
 @authrequired()
 @bot_manager()
-async def dashboard(request, code_name, bot, user):
-    return render_template('dash-metrics', bot=bot, user=user)
+async def dashboard(request, code_name, section, bot, user):
+    '''Serve dashboard pages.'''
+    if f'dash-{section}.html' not in os.listdir('templates'):
+        abort(404)
+    return render_template(f'dash-{section}', bot=bot, user=user)
 
 @app.post('/hooks/github')
 async def upgrade(request):
     if not validate_github_payload(request):
-        return text('fuck off')
+        return text('fuck off', 401) # not sent by github
     if any('[deploy]' in c['message'] for c in request.json['commits']):
         await app.session.post(app.webhook_url, json=format_embed('update'))
         app.loop.create_task(restart_later())
@@ -245,6 +255,12 @@ async def restart_later():
     app.session.close()
     command = 'sh ../dash.sh'
     os.system(f'echo {app.password}|sudo -S {command}')
+
+
+@app.exception(NotFound)
+async def handle_not_found(request, exception):
+    return text("Not found.")
+
 
 if __name__ == '__main__':
     app.run() if dev_mode else app.run(host='botsettings.tk', port=80)

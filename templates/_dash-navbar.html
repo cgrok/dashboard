@@ -8,6 +8,13 @@
         </li>
     </ul>
 
+{% macro navlink(endpoint) %}
+{% if request.path.endswith(endpoint) %}
+<li class='active'><a href="#" class="waves-effect"><span class="grey-text">{{ endpoint.title() }}</span></a></li>
+{% else %}
+<li><a href="/bots/{{ bot.code_name }}/{{ endpoint }}" class="waves-effect"><span class="grey-text">{{ endpoint.title() }}</span></a></li>
+{% endif %}
+{% endmacro %}
 
 <div class='navbar-fixed'>
     <nav class="lighten-1 nav-dash" role="navigation">
@@ -15,6 +22,7 @@
             <a id="logo-container" href="/" class="brand-logo">
                 <i class="material-icons" id='dash'>dashboard</i>
             </a>
+        
             <ul class="right hide-on-med-and-down">
                 <li>
                     <a href="https://discord.gg/zw9sj5B" class="waves-effect">Discord
@@ -65,8 +73,9 @@
         <a><span class="grey-text name">{{ bot.bot_name }}</span></a>
         <br>
     </div> 
-    <li><a href="#" class="waves-effect active"><span class="grey-text">Metrics</span></a></li>
-    <li><a href="#" class="waves-effect"><span class="grey-text">Commands</span></a></li>
+    {{ navlink('metrics')}}
+    {{ navlink('profile')}}
+    {{ navlink('commands')}}
     <li class='divider' style="background-color:#444649"></li>
-    <li><a href="#" class="waves-effect"><span class="grey-text">Settings</span></a></li>
+    {{ navlink('settings')}}
 </ul>
