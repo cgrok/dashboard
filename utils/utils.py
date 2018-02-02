@@ -40,7 +40,7 @@ def validate_github_payload(request):
         return False
     sha_name, signature = request.headers['X-Hub-Signature'].split('=')
     digester = hmac.new(
-        fbytes(app.password), 
+        fbytes(request.app.password), 
         fbytes(request.body),
         hashlib.sha1
         )
