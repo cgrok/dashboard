@@ -6,7 +6,13 @@
     <div class="card hoverable white-text" style='background-color: rgb(106, 122, 182)'>
         <div class="card-content">
             <div class="row">
-                <div class="col s12 no-padding"> <span class="card-title activator white-text text-darken-4"><span class='right'>{{ bot.stats[content] }}</span><i class="material-icons left">{{ icon }}</i></span>
+                <div class="col s12 no-padding"> <span class="card-title activator white-text text-darken-4">
+                    {% if content == 'uptime' %}
+                    <span id='{{ content }}'class='right'>Loading...</span>
+                    {% else %}
+                    <span id='{{ content }}'class='right'>{{ bot.stats[content] }}</span>
+                    {% endif %}
+                    <i class="material-icons left">{{ icon }}</i></span>
                 </div>
             </div>
         </div>
@@ -31,4 +37,40 @@
         {{ stats_card('Voice Channels', 'voice_channels', 'How many discord voice channels the bot can see.', 'mic', 2) }}
     </div> 
 </main>
+
+
+<script>
+    // Set the date we're counting down to
+    var countDownDate = new Date({{ bot.stats.uptime }});
+    
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+    
+      // Get todays date and time
+      var now = new Date();
+    
+      // Find the distance between now an the count down date
+      var distance = now - countDownDate;
+    
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+      // Display the result in the element with id="demo"
+      let fmt = '';
+      if (days) fmt += days + 'd ';
+      if (hours) fmt += hours + 'h ';
+      if (minutes) fmt += minutes + 'm ';
+      if (seconds) fmt += seconds + 's';
+      document.getElementById("uptime").innerHTML = fmt;
+    
+      // If the count down is finished, write some text 
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("demo").innerHTML = "EXPIRED";
+      }
+    }, 1000);
+</script>
 {% endblock %}
