@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block navbar %} {% include '_dash-navbar.html' %} {% endblock %}
 
-{% macro stats_card(name, content, description, icon, m=3)%}
-<div class="col m{{m}} s6">
+{% macro stats_card(name, content, description, icon, m=3, s=6, l=3)%}
+<div class="col m{{m}} s{{s}} l{{l}}">
     <div class="card hoverable white-text" style='background-color: rgb(106, 122, 182)'>
         <div class="card-content">
             <div class="row">
@@ -27,14 +27,14 @@
 {% block content %} 
 <main class='dash-content'>
     <div class="row">
-        {{ stats_card('Uptime', 'uptime', 'How long the bot has been online for.', 'access_time', 3) }}
-        {{ stats_card('Ping', 'ping', "The bot's websocket API latency.", 'flash_on') }}
-        {{ stats_card('CPU Usage', 'cpu_usage', 'Current CPU usage for the bot.', 'developer_board') }}
-        {{ stats_card('RAM Usage', 'ram_usage', 'Did you think clicking this would clear up some ram?', 'clear_all') }}
-        {{ stats_card('Guilds', 'servers', 'The number of discord servers the bot is in.', 'storage', 2) }}
-        {{ stats_card('Users', 'users', 'The number of discord users the bot can see.', 'people') }}
-        {{ stats_card('Text Channels', 'text_channels', 'How many discord text channels the bot can see.', 'textsms', 2) }}
-        {{ stats_card('Voice Channels', 'voice_channels', 'How many discord voice channels the bot can see.', 'mic', 2) }}
+        {{ stats_card('Uptime', 'uptime', 'How long the bot has been online for.', 'access_time', m=4, l=3, s=12) }}
+        {{ stats_card('Ping', 'ping', "The bot's websocket API latency.", 'flash_on', m=4, l=3, s=12) }}
+        {{ stats_card('CPU Usage', 'cpu_usage', 'Current CPU usage for the bot.', 'developer_board', m=4, l=3, s=12) }}
+        {{ stats_card('RAM Usage', 'ram_usage', 'Did you think clicking this would clear up some ram?', 'clear_all', m=4, l=3, s=12) }}
+        {{ stats_card('Guilds', 'servers', 'The number of discord servers the bot is in.', 'storage', m=2, l=2) }}
+        {{ stats_card('Users', 'users', 'The number of discord users the bot can see.', 'people', l=2) }}
+        {{ stats_card('Text Channels', 'text_channels', 'How many discord text channels the bot can see.', 'textsms', m=3, l=3) }}
+        {{ stats_card('Voice Channels', 'voice_channels', 'How many discord voice channels the bot can see.', 'mic', m=3, l=3) }}
     </div> 
 </main>
 
